@@ -64,26 +64,29 @@ async def event():
     pass
 
 @event.command()
-async def propose(ctx, name:str, day:str, time:str)
+async def propose(ctx, name:str, day:str, time:str):
     pass
 
 @event.command()
-async def cancel(ctx, name:str)
+async def cancel(ctx, name:str):
     pass
 
 @event.command(name='list')
-async def _list(ctx)
+async def _list(ctx):
     pass
-
 
 @bot.command()
 async def music():
     pass
 
 @bot.command()
+async def say(ctx, *args:str):
+    await ctx.message.delete()
+    await ctx.channel.send(' '.join(args))
+
+@bot.command()
 async def hello(ctx, arg):
     await ctx.send(arg)
-
 
 @bot.command()
 async def sleepy(ctx):
