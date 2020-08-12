@@ -54,7 +54,7 @@ async def my_load(ctx, extension, bot):
         bot.load_extension('cogs.{0}'.format(extension))
         await ctx.channel.send('Extension \'{0}\' loaded!'.format(extension))
     except:
-        await ctx.channel.send('Unload \'{0}\' failed!'.format(extension))
+        await ctx.channel.send('Load \'{0}\' failed!'.format(extension))
 
 async def my_unload(ctx, extension, bot):
     try:
