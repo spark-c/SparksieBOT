@@ -14,9 +14,11 @@ class Functions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    # @commands.Cog.listener()
-    # async def on_message(self):
-    #     pass
+    @commands.Cog.listener()
+    async def on_message(self,ctx):
+        if ctx.content.lower().startswith('good bot'):
+            await ctx.channel.send('Thanks!')
+    
 
     @commands.command()
     async def ping(self, ctx):
@@ -40,7 +42,7 @@ class Functions(commands.Cog):
             return
         parsed = bs4.BeautifulSoup(results.text, 'html.parser')
         images = parsed.select('img')
-        index = random.randint(1,20)
+        index = random.randint(1,20) # higher ranges result in out-of-index errors
         print('index is {0}'.format(index))
         imgLink = images[index].attrs['src']
         await ctx.channel.send(imgLink)
