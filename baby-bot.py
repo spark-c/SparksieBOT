@@ -1,8 +1,9 @@
 import discord
 import logging
 from discord.ext import commands
-import asyncio
 import random
+import asyncio
+import os
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -35,60 +36,44 @@ async def on_message(message):
     except:
         return
 
+@bot.command()
+async def load(ctx, extension):
+    await my_load(ctx, extension, bot)
 
 @bot.command()
-async def rng(ctx, min:int, max:int, iters:int=1): #generate a random number between min and max, optionally several times.
-    ints = []
-    temp = []
-    for i in range(0, iters): #generate the numbers
-        ints.append(random.randint(min, max))
-    for i in range(0, len(ints)): #turn them into str for printing
-        temp.append(str(ints[i]))
-    result = 'Here are your numbers: ' + ', '.join(temp)
-    await ctx.channel.send(result)
+async def unload(ctx, extension):
+    await my_unload(ctx, extension, bot)
 
 @bot.command()
-async def teampicker(ctx, sharks:int, jets:int): #team1size vs team2size
-    lineup = []
-    for i in range(0, sharks + jets): #creates list to pick from
-        lineup.append(i + 1) # +1 so that we get regular counting numbers
-    random.shuffle(lineup)
-    teamOne = lineup[:sharks]
-    teamTwo = lineup[sharks:]
-    await ctx.channel.send('Here\'s the lineup:\n{0} vs. {1}'.format(teamOne, teamTwo))
-    await asyncio.sleep(3)
-    await ctx.channel.send('noobs')
+async def reload(ctx, extension):
+    await my_unload(ctx, extension, bot)
+    await my_load(ctx, extension, bot)
 
-@bot.group(pass_context=True)
-async def event():
-    pass
+async def my_load(ctx, extension, bot):
+    try:
+        bot.load_extension('cogs.{0}'.format(extension))
+        await ctx.channel.send('Extension \'{0}\' loaded!'.format(extension))
+    except:
+        await ctx.channel.send('Unload \'{0}\' failed!'.format(extension))
 
-@event.command()
-async def propose(ctx, name:str, day:str, time:str)
-    pass
-
-@event.command()
-async def cancel(ctx, name:str)
-    pass
-
-@event.command(name='list')
-async def _list(ctx)
-    pass
+async def my_unload(ctx, extension, bot):
+    try:
+        bot.unload_extension('cogs.{0}'.format(extension))
+        await ctx.channel.send('Extension \'{0}\' unloaded!'.format(extension))
+    except:
+        await ctx.channel.send('Unload \'{0}\' failed!'.format(extension))
 
 
-@bot.command()
-async def music():
-    pass
+print('working directory is {0}'.format(os.getcwd()))
 
-@bot.command()
-async def hello(ctx, arg):
-    await ctx.send(arg)
-
-
-@bot.command()
-async def sleepy(ctx):
-    await ctx.channel.send('Good night, sweet prince.')
-    await bot.close()
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        try:
+            loadThis = filename[:-3]
+            bot.load_extension('cogs.{0}'.format(loadThis))
+            print('cog ' + filename + ' loaded.')
+        except:
+            print('cog ' + filename + ' failed!')
 
 with open(r'./baby-bot-token.txt', 'r') as f:
     token = f.read()
