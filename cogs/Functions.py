@@ -104,6 +104,30 @@ class Functions(commands.Cog):
             await self.bot.close()
         else:
             await ctx.channel.send("I'm not tired yet!")
+			
+    @commands.command()
+    async def help_printout(self, ctx):
+	    await ctx.channel.send(r'''
+.
+!cat - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat.
+
+!marco - pings you with 'Polo!' from a different text channel.
+
+!ping - Pong!
+
+!rng - usage: !rng (min) (max) (how-many) // returns random numbers(s) between min and max
+
+!say - makes the bot say whatever you type after !say
+
+!sleepy - turns bot off (confirm with a reply of 'y')
+
+!teampicker - usage: !teampicker (team1size) (team2size) // returns numbers in the format [ 1, 2 ] vs [ 3, 4, 5 ] in random order to assign teams. Plans to optionally use names from an occupied voice channel instead.
+
+!help - lists available commands
+
+!help (command) - shows usage of given command
+
+!help_printout - shows this message.''')
 
 
 def setup(bot):
