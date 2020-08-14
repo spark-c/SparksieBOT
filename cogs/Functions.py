@@ -15,25 +15,41 @@ class Functions(commands.Cog):
         self.bot = bot
     
     @commands.Cog.listener()
-    async def on_message(self,ctx):
-        if ctx.content.lower().startswith('good bot'):
+    async def on_message(self, ctx):
+        if ctx.content.lower().startswith('good bot'): # Thanks for 'good bot'
             await ctx.channel.send('Thanks!')
-    
+        if self.bot.user in ctx.mentions: # Responds to Mentions
+            print(ctx.content)
+            if ctx.content.lower().startswith('he') or ctx.content.lower().startswith('hi'): # hey, hello, hi
+                await ctx.channel.send('Hello {0}!'.format(ctx.author))
+            else:
+                await ctx.channel.send('Beep boop!')
+
 
     @commands.command()
     async def ping(self, ctx):
         await ctx.channel.send('Pong!')
 
     @commands.command()
-    async def marco(self, ctx):
-        await ctx.channel.send('Polo!') # make it join a DIFFERENT channel to say this
+    async def marco(self, ctx): # Replies "Polo!" with a mention of the invoker in a different text channel, if available
+        allChannels = []
+        for channel in ctx.guild.channels:
+            if channel.type == discord.ChannelType.text:
+                allChannels.append(channel)
+        allChannels.remove(ctx.channel)
+        if len(allChannels) > 0:
+            await allChannels[random.randint(0, len(allChannels) - 1)].send('Polo! {0}'.format(ctx.author.mention)) # make it join a random DIFFERENT channel to say this
+        else:
+            await ctx.channel.send('Polo!')
 
     @commands.command()
-    async def cat(self, ctx):
-        catQueries = ['cat', 'cats', 'happy+kitty', 'kitten', 'happy+cat', 'cute+cat', 'cat+in+box', 'sleepy+cat', 'house+cat']
-        query = catQueries[random.randint(0, len(catQueries)-1)]
-        print('searching for {0}'.format(query))
-        results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format(query))
+    async def cat(self, ctx, *terms): # searches for a random cat picture, or can search optional arguments instead
+        catQueries = ['cat', 'cats', 'happy kitty', 'kitten', 'happy cat', 'cute cat', 'cat in box', 'sleepy cat', 'house cat']
+        if terms:
+            query = terms
+        else:
+            query = catQueries[random.randint(0, len(catQueries)-1)]
+        results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format('+'.join(query)))
         try:
             results.raise_for_status()
         except:
@@ -43,7 +59,6 @@ class Functions(commands.Cog):
         parsed = bs4.BeautifulSoup(results.text, 'html.parser')
         images = parsed.select('img')
         index = random.randint(1,20) # higher ranges result in out-of-index errors
-        print('index is {0}'.format(index))
         imgLink = images[index].attrs['src']
         await ctx.channel.send(imgLink)
 
@@ -74,10 +89,6 @@ class Functions(commands.Cog):
     async def say(self, ctx, *args:str):
         await ctx.message.delete()
         await ctx.channel.send(' '.join(args))
-
-    @commands.command()
-    async def hello(self, ctx, arg):
-        await ctx.send(arg)
 
     @commands.command()
     async def sleepy(self, ctx):
