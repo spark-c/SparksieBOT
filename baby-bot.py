@@ -76,14 +76,12 @@ for filename in os.listdir('./cogs'):
             print('cog ' + filename + ' failed!')
 
 #For use when running from a real filesystem
-
-##with open(r'./baby-bot-token.txt', 'r') as f:
-##    token = f.read()
-##bot.run(token)
-
-#For use when deployed via heroku (using config vars to feed in the token)
-
-bot.run(process.env.token)
+try:
+    with open(r'./baby-bot-token.txt', 'r') as f:
+        token = f.read()
+    bot.run(token)
+except: #For use when deployed via heroku (using config vars to feed in the token)
+    bot.run(os.environ["TOKEN"])
 
 
 
