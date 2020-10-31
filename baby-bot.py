@@ -4,6 +4,7 @@ from discord.ext import commands
 import random
 import asyncio
 import os
+import groovycommands
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -21,6 +22,20 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
+
+    if message.content.lower().startswith('-') and message.channel.name != 'groovybitch-corner': #if the message is a groovy command
+        for command in groovycommands.groovycommands:
+            if message.content.lower().startswith(command):
+                await message.delete()
+                await message.channel.send('No littering. Keep the trash in the correct channel.')
+                targetChannel = discord.utils.get(message.guild.text_channels, name='groovybitch-corner')
+                await targetChannel.send('{0} Where it belongs.'.format(message.author.mention))
+    
+    if str(message.author) == 'Groovy#7254' and message.channel.name != 'groovybitch-corner': #Checks if the message was sent by Groovy / in the wrong channel
+        await message.delete()
+        
+    if 'groovy' in message.content.lower():
+        await message.channel.send('Fuck that guy.')
     
     if message.content.lower().startswith('congrat'):
         for i in range(0,2):

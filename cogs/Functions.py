@@ -87,8 +87,11 @@ class Functions(commands.Cog):
     
     @commands.command()
     async def say(self, ctx, *args:str):
-        await ctx.message.delete()
-        await ctx.channel.send(' '.join(args))
+        if str(ctx.message.author) == 'spark.c#7001':
+            await ctx.message.delete()
+            await ctx.channel.send(' '.join(args))
+        else:
+            await ctx.channel.send('Nice try. I\'m not your mouthpiece anymore!')
 
     @commands.command()
     async def sleepy(self, ctx):
