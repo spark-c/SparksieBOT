@@ -13,7 +13,7 @@ class Functions(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.Cog.listener()
     async def on_message(self, ctx):
         if ctx.content.lower().startswith('good bot'): # Thanks for 'good bot'
@@ -63,14 +63,22 @@ class Functions(commands.Cog):
         await ctx.channel.send(imgLink)
 
     @commands.command()
-    async def rng(self, ctx, min:int, max:int, iters:int=1): #generate a random number between min and max, optionally several times.
+    async def roll(self, ctx, dice:str): #generate a random number between min and max, optionally several times.
+        try:
+            dice = dice.split('d') # 4d6 = [4, 6]
+            for i in range(0, len(dice)):
+                dice[i] = int(dice[i])
+                iters = dice[0]
+        except:
+            await ctx.channel.send('Usage: !roll 4d6')
+
         ints = []
         temp = []
         for i in range(0, iters): #generate the numbers
-            ints.append(random.randint(min, max))
+            ints.append(random.randint(1, dice[1])) # number between 1 and size of die (includes endpoint)
         for i in range(0, len(ints)): #turn them into str for printing
             temp.append(str(ints[i]))
-        result = 'Here are your numbers: ' + ', '.join(temp)
+        result = 'Here are your numbers: ' + ', '.join(temp) + '\n Sum: {}'.format(sum(ints))
         await ctx.channel.send(result)
 
     @commands.command()
@@ -84,7 +92,7 @@ class Functions(commands.Cog):
         await ctx.channel.send('Here\'s the lineup:\n{0} vs. {1}'.format(teamOne, teamTwo))
         await asyncio.sleep(3)
         await ctx.channel.send('noobs')
-    
+
     @commands.command()
     async def say(self, ctx, *args:str):
         if str(ctx.message.author) == 'spark.c#7001':
@@ -107,7 +115,7 @@ class Functions(commands.Cog):
             await self.bot.close()
         else:
             await ctx.channel.send("I'm not tired yet!")
-			
+
     @commands.command()
     async def help_printout(self, ctx):
 	    await ctx.channel.send(r'''
@@ -118,7 +126,7 @@ class Functions(commands.Cog):
 
 !ping - Pong!
 
-!rng - usage: !rng (min) (max) (how-many) // returns random numbers(s) between min and max
+!roll - usage: !roll 4d6
 
 !say - makes the bot say whatever you type after !say
 
