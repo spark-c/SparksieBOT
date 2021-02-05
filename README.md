@@ -6,6 +6,7 @@ This is a discord bot made initially as a learning project; it is a part of the 
 Commands:
 
 ....(Funtions cog)
+
 !cat - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat.
 
 !marco - pings you with 'Polo!' from a different text channel.
@@ -27,6 +28,7 @@ Commands:
 !help_printout - shows this message.''')
 
 ....(Minecraft cog)
+
 !playercount - returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well (!playercount names).
 
 TBD: Finish ist of commands and functionality.
