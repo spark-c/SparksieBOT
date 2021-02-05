@@ -26,4 +26,7 @@ Commands:
 
 !help_printout - shows this message.''')
 
+....(Minecraft cog)
+!playercount - returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well (!playercount names).
+
 TBD: Finish ist of commands and functionality.
