@@ -117,6 +117,35 @@ class Functions(commands.Cog):
             await ctx.channel.send("I'm not tired yet!")
 
     @commands.command()
+    async def lotr(self, ctx): #grabs a random quote from source site
+        queryIndex = random.randint(1, 64) #there are 64 quotes on the site
+        queryURL = 'http://lotrproject.com/quotes/quote/{}'.format(str(queryIndex))
+
+        headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0"} # this is necessary bc target site rejects py requests
+
+        results = requests.get(queryURL, headers=headers)
+
+        try:
+            results.raise_for_status()
+        except:
+            await ctx.channel.send("I couldn't find a quote!")
+            return
+            
+        try:
+            parsed = bs4.BeautifulSoup(results.text, 'html.parser')
+            quote = parsed.find(class_ = 'text').text
+            character = parsed.find(class_ = 'character').text
+            source = parsed.find(class_ = 'source').text
+
+            quoteEmbed = discord.Embed(name='', description=quote)
+            quoteEmbed.add_field(name=character, value=source)
+
+            await ctx.channel.send(embed=quoteEmbed)
+        except:
+            await ctx.channel.send("Something went wrong!")
+
+
+    @commands.command()
     async def help_printout(self, ctx):
 	    await ctx.channel.send(r'''
 .
