@@ -9,6 +9,7 @@ import requests
 import bs4
 import asyncio
 
+
 class Functions(commands.Cog):
 
     def __init__(self, bot):
@@ -130,7 +131,7 @@ class Functions(commands.Cog):
         except:
             await ctx.channel.send("I couldn't find a quote!")
             return
-            
+
         try:
             parsed = bs4.BeautifulSoup(results.text, 'html.parser')
             quote = parsed.find(class_ = 'text').text
