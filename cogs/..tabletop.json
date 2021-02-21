@@ -1,0 +1,8 @@
+{
+    "name": "Battleship",
+    "players": "2",
+    "note": "",
+    "printout": {
+        "Battleship": "(2 players)"
+    }
+}

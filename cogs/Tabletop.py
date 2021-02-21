@@ -42,6 +42,17 @@ def read_games(): # reads existing data from .json file in parent directory
             return []
 
 
+def save_games():
+    outfile = 'tabletop.json'
+    # try:
+    with open(outfile, 'w') as f:
+        for game in Game.games:
+            json.dump(game.__dict__, f, indent=4) # dict form of that object, or else we get error 'not JSON serializable'
+    # except:
+    #     print('ERROR saving gameslist to file!')
+
+
+
 def sort_by(element):
     return int(element.players)
 
@@ -62,7 +73,7 @@ def generate_gamelist(sort=None): # returns message to be delivered by the bot
             elif sort == 'players-high':
                 working = sorted(working, reverse=True, key=sort_by)
     for game in working: #this is now a sorted list of object instances
-        gamestring = '{}: {} players'.format(game.name, game.players)
+        gamestring = '**{}**: {} players'.format(game.name, game.players) # will show the game name in bold
         message.append(gamestring)
 
     return to_final_string(message)
@@ -85,6 +96,7 @@ class Tabletop(commands.Cog):
 
         await ctx.channel.send(message)
 
+
     @commands.command()
     async def add_game(self, ctx, name, players=3, note=''):
         try:
@@ -92,11 +104,19 @@ class Tabletop(commands.Cog):
             await ctx.channel.send('Successfully added {}!'.format(name))
         except:
             await ctx.channel.send('Something went wrong!')
+        save_games()
+
+
+    @add_game.error
+    async def add_game_error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.channel.send('Error! If the game\'s name has spaces, try wrapping it in quotes.')
+
 
     @commands.command()
     async def delete_game(self, ctx, name):
-        pass
-
+        # delete the game
+        save_games()
 
 
 def setup(bot):
