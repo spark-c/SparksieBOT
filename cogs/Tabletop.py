@@ -24,32 +24,24 @@ class Game(): # ideally we'd always specify the playercount, but let's be real.
 
 
 def read_games(): # reads existing data from .json file in parent directory
-    games = []
-    if not os.path.isfile('../tabletop.json'):
-        with open('../tabletop.json', 'a') as f: # append mode; not writing anything though, it will just create if doesn't exist
-            print('created new tabltop.json file')
-            return []
-    else:
-        try:
-            with open('../tabletop.json', 'r') as f:
-                found_data = json.load(f)
-            for instance in found_data:
-                instance = Game(instance['name'], instance['players'], instance['note']) # inits instances of objs from data
-            games.append(instance)
-            return games
-        except:
-            print('ERROR LOADING TABLETOP.json')
-            return []
+    try:
+        with open('./tabletop.json', 'r') as f:
+            json_data = json.loads(json.load(f))
+        for instance in json_data:
+            instance = Game(instance['name'], instance['players'], instance['note']) # inits instances of objs from data
+    except:
+        print('Couldn\'t load tabletop.json!')
 
 
 def save_games():
-    outfile = 'tabletop.json'
-    # try:
-    with open(outfile, 'w') as f:
-        for game in Game.games:
-            json.dump(game.__dict__, f, indent=4) # dict form of that object, or else we get error 'not JSON serializable'
-    # except:
-    #     print('ERROR saving gameslist to file!')
+    outfile = './tabletop.json'
+    json_string = json.dumps([obj.__dict__ for obj in Game.games], indent=4)
+    print('JSON STRING:' + json_string)
+    try:
+        with open(outfile, 'w') as f:
+            json.dump(json_string, f) # dict form of that object, or else we get error 'not JSON serializable'
+    except:
+        print('ERROR saving gameslist to file!')
 
 
 
@@ -121,3 +113,6 @@ class Tabletop(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Tabletop(bot))
+
+
+read_games() #this should take place when the cog is loaded
