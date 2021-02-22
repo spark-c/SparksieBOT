@@ -23,6 +23,11 @@ class Game(): # ideally we'd always specify the playercount, but let's be real.
         Game.games.append(self)
 
 
+    def delete(self):
+        print('Deleting {}...'.format(self.name))
+        Game.games.remove(self)
+
+
 def read_games(): # reads existing data from .json file in parent directory
     try:
         with open('./tabletop.json', 'r') as f:
@@ -36,7 +41,6 @@ def read_games(): # reads existing data from .json file in parent directory
 def save_games():
     outfile = './tabletop.json'
     json_string = json.dumps([obj.__dict__ for obj in Game.games], indent=4)
-    print('JSON STRING:' + json_string)
     try:
         with open(outfile, 'w') as f:
             json.dump(json_string, f) # dict form of that object, or else we get error 'not JSON serializable'
@@ -107,8 +111,23 @@ class Tabletop(commands.Cog):
 
     @commands.command()
     async def delete_game(self, ctx, name):
-        # delete the game
+        selected = find_game(name)
+        if not selected:
+            await ctx.channel.send('I couldn\t find any game by that name!')
+            return
+        else:
+            await ctx.channel.send('Deleting {}!'.format(selected.name))
+            selected.delete()
+
         save_games()
+
+
+def find_game(name):
+    for obj in Game.games:
+        if obj.name.lower() == name.lower():
+            return obj
+    return None # didn't find any matching objects
+
 
 
 def setup(bot):
