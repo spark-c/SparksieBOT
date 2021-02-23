@@ -31,4 +31,20 @@ Commands:
 
 !playercount - returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well (!playercount names).
 
+....(Tabletop cog)
+
+!gamelist: returns the list of boardgames we've assembled.
+You can optionally type players-low or players-high (!gamelist players-low) to sort the list by the required number of players.
+
+  When you specify number of players, use a low number that is reasonable for having fun playing the game. So like, you can technically play Monopoly with 2 players, but why would you do that? I'd say 3 for that one.
+
+  If no #players is specified, it will default to 3.
+
+!add_game: adds a game to the list. Usage: !add_game (name) (# players) (optional note).
+Keep in mind that any item that has a space in it will NEED to be wrapped in quotes. E.g. Secret Hitler will not work; must be "Secret Hitler". Also applies to the optional note.
+
+!delete_game: type the game's name after this command to remove it from the list.
+
+Currently there is no way to view the notes, or edit the game's info; that stuff is still being worked on.
+
 TBD: Finish ist of commands and functionality.
