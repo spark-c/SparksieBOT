@@ -50,6 +50,11 @@ class Functions(commands.Cog):
             query = terms
         else:
             query = catQueries[random.randint(0, len(catQueries)-1)]
+            if query[0] == '-f': # optional arg to return the first search result
+                index = 0 # index of result to return
+            else:
+                index = random.randint(1,20) # higher ranges risk out-of-index errors
+
         results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format('+'.join(query)))
         try:
             results.raise_for_status()
@@ -59,7 +64,6 @@ class Functions(commands.Cog):
             return
         parsed = bs4.BeautifulSoup(results.text, 'html.parser')
         images = parsed.select('img')
-        index = random.randint(1,20) # higher ranges result in out-of-index errors
         imgLink = images[index].attrs['src']
         await ctx.channel.send(imgLink)
 
@@ -158,7 +162,7 @@ class Functions(commands.Cog):
 
 !roll - usage: !roll 4d6
 
-!say - makes the bot say whatever you type after !say
+!say - makes the bot say whatever you type after !say (sparksie only)
 
 !sleepy - turns bot off (confirm with a reply of 'y')
 
