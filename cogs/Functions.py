@@ -50,12 +50,15 @@ class Functions(commands.Cog):
             query = terms
         else:
             query = catQueries[random.randint(0, len(catQueries)-1)]
-            if query[0] == '-f': # optional arg to return the first search result
-                index = 0 # index of result to return
-            else:
-                index = random.randint(1,20) # higher ranges risk out-of-index errors
 
-        results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format('+'.join(query)))
+        if query[0] == '-f': # optional arg to return the first search result
+            index = 1 # not 0, which will return a google pic from the search page. var is the index of serach result to return
+            final_query = query[1:] # removes the '-f' from the search terms
+        else:
+            final_query = query
+            index = random.randint(1,20) # higher ranges risk out-of-index errors
+
+        results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format('+'.join(final_query)))
         try:
             results.raise_for_status()
         except:
