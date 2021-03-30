@@ -7,7 +7,7 @@ Commands:
 
 ....(Funtions cog)
 
-!cat - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat.
+!cat [-f] - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat. Use the optional argument "-f" to return the first (read: most relevant) search result for your query.
 
 !marco - pings you with 'Polo!' from a different text channel.
 
