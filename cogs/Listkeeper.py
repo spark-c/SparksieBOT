@@ -12,9 +12,10 @@ from typing import Union, Dict, List
 ## CLASS DEFS ##
 class ColxItem():
 
-    def __init__(self, label:str, note:str="") -> None:
+    def __init__(self, parent_collection: List, label:str, note:str="") -> None:
         self.label: str = label
         self.note: str = note
+        self.parent_collection: List[self] = parent_collection
 
 
     def __repr__(self) -> str:
@@ -23,15 +24,16 @@ class ColxItem():
 
     def set_label(self, label:str) -> None:
         self.label = label
+        Collection.update_selected(self.parent_collection)
 
 
     def set_note(self, note:str) -> None:
         self.note = note
-
+        Collection.update_selected(self.parent_collection)
 
     def printout(self) -> str:
         return f"{self.label}: {self.note}"
-
+        
 
 
 class Collection():
@@ -52,11 +54,16 @@ class Collection():
         return f"(Collection Object) {self.name}: {self.desc}"
 
 
+    @classmethod
+    def update_selected(self, collection: Union[List[ColxItem], None]) -> None:
+        self.selected_list = collection
+
+
     def delete_self(self) -> None:
         print(f'Removing {self.name} from Listkeeper!')
         Collection.master.remove(self)
         if Collection.selected_list == self:
-            Collection.selected_list = None
+            Collection.update_selected(None)
 
 
     def add_item(self, label:str, note:str="") -> None: #
@@ -65,8 +72,9 @@ class Collection():
                 print("ERROR: Label already in use!")
                 return
 
-        item: ColxItem = ColxItem(label, note)
+        item: ColxItem = ColxItem(self, label, note) # self here is ColxItem(parent_collection) parameter
         self.contents.append(item)
+        Collection.update_selected(self)
         save_to_file()
 
 
@@ -75,6 +83,8 @@ class Collection():
             if item.label == label:
                 print("removing", item.label)
                 self.contents.remove(item)
+
+        Collection.update_selected(self)
 
 
 
