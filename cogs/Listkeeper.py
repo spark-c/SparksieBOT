@@ -33,7 +33,7 @@ class ColxItem():
 
     def printout(self) -> str:
         return f"{self.label}: {self.note}"
-        
+
 
 
 class Collection():
@@ -64,6 +64,7 @@ class Collection():
         Collection.master.remove(self)
         if Collection.selected_list == self:
             Collection.update_selected(None)
+        save_to_file()
 
 
     def add_item(self, label:str, note:str="") -> None: #
