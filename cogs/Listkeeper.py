@@ -101,6 +101,8 @@ def save_to_file() -> None:
 # ## MAIN COG ##
 # class ListKeeper(commands.cog):
 
+#     save_dir_initialized: Dict[int, bool] = 
+
 #     def __init__(self, bot) -> None:
 #         self.bot = bot
 
