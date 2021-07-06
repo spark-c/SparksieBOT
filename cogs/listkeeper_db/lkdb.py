@@ -15,6 +15,7 @@ class Collection(Base):
     description = Column(String, nullable=True)
     collection_id = Column(Integer, primary_key=True, nullable=False)
     items = relationship("Item", backref="collection", cascade="all, delete-orphan")
+    #TODO guild_id = Column(Integer, nullable=False)
 
 
 class Item(Base):
