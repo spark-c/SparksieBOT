@@ -2,7 +2,11 @@
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
 
+from typing import Union, List
 
+
+# TODO: handle possibility of db downtime
+# TODO: use envvar for db address
 engine = create_engine('postgresql://localhost/baby-bot-dev', echo=False)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
@@ -29,3 +33,34 @@ class Item(Base):
 
 
 Base.metadata.create_all(engine)
+
+## HELPER FUNCTIONS ##
+
+## Create
+def create_collection(name: str, collection_id: int, guild_id: int, description: str="") -> None:
+    pass
+
+
+def create_item(name: str, item_id: int, collection_id: int, note: str="") -> None:
+    pass
+
+
+## Read
+def get_guild_collections(guild_id: int) -> List[Collection[Item]]:
+    pass
+
+
+def get_items(collection: Collection) -> List[Item]:
+    pass
+
+
+## Update TODO
+
+
+## Delete
+def delete_collection(collection: Collection) -> None:
+    pass
+
+
+def delete_item(item: Item) -> None:
+    pass
