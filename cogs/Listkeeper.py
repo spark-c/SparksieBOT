@@ -1,5 +1,6 @@
 # Cog to keep track of lists made by users
-
+# July 2021
+# Collin Sparks
 
 import discord
 from discord.ext import commands
@@ -10,7 +11,9 @@ try:
     from cogs.listkeeper_db.lkdb import Collection
     import listkeeper_db.lkdb as lkdb
 except:
+    print("Unable to load lkdb.py!")
     raise Exception("Unable to load lkdb.py!")
+
 
 class Listkeeper(commands.Cog):
     
@@ -43,8 +46,8 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def listall(self, ctx) -> None:
         tmp: List[Collection] = lkdb.get_guild_collections(ctx.guild.id)
-        collection_names: List[str] = [colx.name for colx in tmp]
-        await ctx.channel.send(f"Here are your lists:\n{collection_names.join('\n')}")
+        collection_names: str = [colx.name for colx in tmp].join("\n")
+        await ctx.channel.send(f"Here are your lists:\n{collection_names}")
 
 
     @commands.command()
