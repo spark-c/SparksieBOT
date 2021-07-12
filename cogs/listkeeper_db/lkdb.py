@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
 import secrets
 
-from typing import Union, List, Any
+from typing import Union, List, Set, Any
 
 class DatabaseError(Exception):
     def __init__(self, message="Unable to complete database operation!", object_to_debug: Any=None) -> None:
@@ -105,8 +105,8 @@ def search_collections_by_id(collection_id: int) -> Union[Collection, None]:
 
 
 ## ID Management
-tmp = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
-used_ids = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
+tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
+used_ids: Set[int] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
 print("Used IDs:", used_ids)
 
 def generate_id():
