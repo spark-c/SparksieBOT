@@ -25,7 +25,7 @@ class Collection(Base):
 
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
-    collection_id = Column(Integer, primary_key=True, nullable=False)
+    collection_id = Column(String, primary_key=True, nullable=False)
     items = relationship("Item", backref="collection", cascade="all, delete-orphan")
     guild_id = Column(Integer, nullable=False)
 
@@ -35,8 +35,8 @@ class Item(Base):
 
     name = Column(String, nullable=False)
     note = Column(String, nullable=True)
-    item_id = Column(Integer, primary_key=True, nullable=False)
-    collection_id = Column(Integer, ForeignKey("collection.collection_id"), nullable=False)
+    item_id = Column(String, primary_key=True, nullable=False)
+    collection_id = Column(String, ForeignKey("collection.collection_id"), nullable=False)
     # collection = relationship("Collection", back_populates="items")
 
 
@@ -71,7 +71,7 @@ def create_collection(name: str, description: str, collection_id: int, guild_id:
         #     session.add(new_colx)
 
 
-def create_item(name: str, item_id: int, collection_id: int, note: str="") -> None:
+def create_item(name: str, item_id: str, collection_id: str, note: str="") -> None:
     pass
 
 
@@ -97,14 +97,14 @@ def delete_item(item: Item) -> None:
 
 
 ## Search
-def search_collections_by_id(collection_id: int) -> Union[Collection, None]:
+def search_collections_by_id(collection_id: str) -> Union[Collection, None]:
     for collection in master_collection:
         if collection.collection_id == collection_id:
             return collection
     return None
 
 
-def search_collections_by_guild_id(guild_id: int) -> List[Collection]:
+def search_collections_by_guild_id(guild_id: str) -> List[Collection]:
     results: List[Collection] = list()
     for collection in master_collection:
         if collection.guild_id == guild_id:
@@ -114,10 +114,10 @@ def search_collections_by_guild_id(guild_id: int) -> List[Collection]:
 
 ## ID Management
 tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
-used_ids: Set[int] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
+used_ids: Set[str] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
 
-def generate_id() -> int:
+def generate_id() -> str:
     while True: # loop until we get a unique ID
-        id: int = secrets.token_hex(4)
+        id: str = secrets.token_hex(4)
         if id not in used_ids:
             return id
