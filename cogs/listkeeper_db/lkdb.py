@@ -40,9 +40,9 @@ class Item(Base):
     # collection = relationship("Collection", back_populates="items")
 
 
-master_collection: List[Collection] = []
 Base.metadata.create_all(engine)
 session = Session()
+master_collection: List[Collection] = session.query(Collection).all()
 
 
 ## HELPER FUNCTIONS ##
