@@ -13,7 +13,6 @@ class DatabaseError(Exception):
         super().__init__(self.message)
 
 
-
 # TODO: handle possibility of db downtime
 # TODO: use envvar for db address
 engine = create_engine('postgresql://localhost/baby-bot-dev', echo=False)
@@ -28,7 +27,7 @@ class Collection(Base):
     description = Column(String, nullable=False)
     collection_id = Column(Integer, primary_key=True, nullable=False)
     items = relationship("Item", backref="collection", cascade="all, delete-orphan")
-    #TODO guild_id = Column(Integer, nullable=False)
+    guild_id = Column(Integer, nullable=False)
 
 
 class Item(Base):
@@ -41,11 +40,12 @@ class Item(Base):
     # collection = relationship("Collection", back_populates="items")
 
 
+master_collection: List[Collection] = []
 Base.metadata.create_all(engine)
 session = Session()
 
-## HELPER FUNCTIONS ##
 
+## HELPER FUNCTIONS ##
 ## Create
 def create_collection(name: str, description: str, collection_id: int, guild_id: int) -> Union[Collection, None]:
     description = "" if description == None else description # default argument "" (conditional expression)
@@ -54,6 +54,7 @@ def create_collection(name: str, description: str, collection_id: int, guild_id:
         try:
             session.add(new_colx)
             session.commit()
+            master_collection.append(new_colx)
         except:
             raise DatabaseError(
                 "Failed to add new entry to database!\n" +
@@ -92,6 +93,14 @@ def delete_collection(collection: Collection) -> None:
 
 def delete_item(item: Item) -> None:
     pass
+
+
+## Search
+def search_collections_by_id(collection_id: int) -> Union[Collection, None]:
+    for collection in master_collection:
+        if collection.collection_id == collection_id:
+            return collection
+    return None
 
 
 
