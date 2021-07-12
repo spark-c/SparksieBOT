@@ -55,6 +55,7 @@ def create_collection(name: str, description: str, collection_id: int, guild_id:
             session.add(new_colx)
             session.commit()
             master_collection.append(new_colx)
+            return new_colx
         except:
             raise DatabaseError(
                 "Failed to add new entry to database!\n" +
@@ -103,14 +104,20 @@ def search_collections_by_id(collection_id: int) -> Union[Collection, None]:
     return None
 
 
+def search_collections_by_guild_id(guild_id: int) -> List[Collection]:
+    results: List[Collection] = list()
+    for collection in master_collection:
+        if collection.guild_id == guild_id:
+            results.append(collection)
+    return results
+
 
 ## ID Management
 tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
 used_ids: Set[int] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
-print("Used IDs:", used_ids)
 
-def generate_id():
+def generate_id() -> int:
     while True: # loop until we get a unique ID
-        id = secrets.token_hex(4)
+        id: int = secrets.token_hex(4)
         if id not in used_ids:
             return id
