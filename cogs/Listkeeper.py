@@ -44,9 +44,9 @@ class Listkeeper(commands.Cog):
     ## Read
     @commands.command()
     async def listall(self, ctx) -> None:
-        tmp: List[Collection] = lkdb.search_collections_by_guild_id(str(ctx.guild.id))
+        tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
         if tmp:
-            collection_names: str = [colx.name for colx in tmp].join("\n")
+            collection_names: str = "\n".join([colx.name for colx in tmp])
             await ctx.channel.send(f"Here are your lists:\n{collection_names}")
         else:
             await ctx.channel.send("No lists found!")
