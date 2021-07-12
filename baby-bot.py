@@ -87,8 +87,9 @@ for filename in os.listdir('./cogs'):
             loadThis = filename[:-3]
             bot.load_extension('cogs.{0}'.format(loadThis))
             print('cog ' + filename + ' loaded.')
-        except:
+        except Exception as e:
             print('cog ' + filename + ' failed!')
+            print(e)
 
 #For use when running from a real filesystem
 try:
