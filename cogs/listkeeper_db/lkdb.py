@@ -1,6 +1,7 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
+import secrets
 
 from typing import Union, List, Any
 
@@ -73,7 +74,7 @@ def create_item(name: str, item_id: int, collection_id: int, note: str="") -> No
 
 
 ## Read
-def get_guild_collections(guild_id: int) -> List[Collection[Item]]:
+def get_guild_collections(guild_id: int) -> List[Collection]:
     pass
 
 
@@ -91,3 +92,16 @@ def delete_collection(collection: Collection) -> None:
 
 def delete_item(item: Item) -> None:
     pass
+
+
+
+## ID Management
+tmp = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
+used_ids = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
+print("Used IDs:", used_ids)
+
+def generate_id():
+    while True: # loop until we get a unique ID
+        id = secrets.token_hex(4)
+        if id not in used_ids:
+            return id
