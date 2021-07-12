@@ -1,17 +1,22 @@
 # Cog to keep track of lists made by users
 
-from cogs.listkeeper_db.lkdb import Collection
+
 import discord
 from discord.ext import commands
 import asyncio
 from typing import Union, Dict, List
 
+from cogs.listkeeper_db.lkdb import Collection
 import listkeeper_db.lkdb as lkdb
 
 
 class Listkeeper(commands.cog):
     
-    selected_list: Union[lkdb.Collection, None] = None
+    selected_list: Union[Collection, None] = None
+
+    def __init__(self, bot):
+        self.bot = bot
+
 
     ## Create
     @commands.command
@@ -73,7 +78,8 @@ class Listkeeper(commands.cog):
         pass
 
 
-
+def setup(bot):
+    bot.add_cog(Listkeeper(bot))
 
     
 
