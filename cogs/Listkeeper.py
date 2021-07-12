@@ -9,10 +9,9 @@ from typing import Union, Dict, List
 
 try:
     from cogs.listkeeper_db.lkdb import Collection
-    import listkeeper_db.lkdb as lkdb
-except:
-    print("Unable to load lkdb.py!")
-    raise Exception("Unable to load lkdb.py!")
+    import cogs.listkeeper_db.lkdb as lkdb
+except Exception as e:
+    print(e)
 
 
 class Listkeeper(commands.Cog):
@@ -46,8 +45,11 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def listall(self, ctx) -> None:
         tmp: List[Collection] = lkdb.get_guild_collections(ctx.guild.id)
-        collection_names: str = [colx.name for colx in tmp].join("\n")
-        await ctx.channel.send(f"Here are your lists:\n{collection_names}")
+        if tmp:
+            collection_names: str = [colx.name for colx in tmp].join("\n")
+            await ctx.channel.send(f"Here are your lists:\n{collection_names}")
+        else:
+            await ctx.channel.send("No lists found!")
 
 
     @commands.command()
