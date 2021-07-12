@@ -27,7 +27,7 @@ class Collection(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     collection_id = Column(String, primary_key=True, nullable=False)
-    items = relationship("Item", backref="collection", cascade="all, delete-orphan")
+    # items = relationship("Item", backref="collection", cascade="all, delete-orphan", lazy="joined")
     guild_id = Column(String, nullable=False)
 
 
@@ -38,8 +38,9 @@ class Item(Base):
     note = Column(String, nullable=True)
     item_id = Column(String, primary_key=True, nullable=False)
     collection_id = Column(String, ForeignKey("collection.collection_id"), nullable=False)
-    # collection = relationship("Collection", back_populates="items")
+    collection = relationship("Collection", lazy="joined", back_populates="items")
 
+Collection.items = relationship("Item", back_populates="collection", lazy="joined")
 
 Base.metadata.create_all(engine)
 session = Session()
