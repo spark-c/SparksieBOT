@@ -1,5 +1,6 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
 import secrets
 
@@ -27,7 +28,7 @@ class Collection(Base):
     description = Column(String, nullable=False)
     collection_id = Column(String, primary_key=True, nullable=False)
     items = relationship("Item", backref="collection", cascade="all, delete-orphan")
-    guild_id = Column(Integer, nullable=False)
+    guild_id = Column(String, nullable=False)
 
 
 class Item(Base):
@@ -47,7 +48,7 @@ master_collection: List[Collection] = session.query(Collection).all()
 
 ## HELPER FUNCTIONS ##
 ## Create
-def create_collection(name: str, description: str, collection_id: int, guild_id: int) -> Union[Collection, None]:
+def create_collection(name: str, description: Union[str, None], collection_id: str, guild_id: str) -> Union[Collection, None]:
     description = "" if description == None else description # default argument "" (conditional expression)
     new_colx = Collection(name=name, description=description, collection_id=collection_id, guild_id=guild_id)
     with Session() as session:
@@ -76,11 +77,11 @@ def create_item(name: str, item_id: str, collection_id: str, note: str="") -> No
 
 
 ## Read
-def get_guild_collections(guild_id: int) -> List[Collection]:
+def get_guild_collections(guild_id: str) -> Union[List[Collection], None]:
     pass
 
 
-def get_items(collection: Collection) -> List[Item]:
+def get_items(collection: Collection):# -> List[Item]:
     pass
 
 
