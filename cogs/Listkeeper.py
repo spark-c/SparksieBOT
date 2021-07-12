@@ -25,8 +25,8 @@ class Listkeeper(commands.Cog):
     ## Create
     @commands.command()
     async def newlist(self, ctx, *args) -> None:
-        name = args[0]
-        desc = args[1] if args[1] else None
+        name: str = args[0]
+        desc: Union[str, None] = args[1] if args[1] else None
         new_colx = lkdb.create_collection(
             name=name,
             description=desc,
@@ -44,7 +44,7 @@ class Listkeeper(commands.Cog):
     ## Read
     @commands.command()
     async def listall(self, ctx) -> None:
-        tmp: List[Collection] = lkdb.get_guild_collections(ctx.guild.id)
+        tmp: List[Collection] = lkdb.search_collections_by_guild_id(str(ctx.guild.id))
         if tmp:
             collection_names: str = [colx.name for colx in tmp].join("\n")
             await ctx.channel.send(f"Here are your lists:\n{collection_names}")
