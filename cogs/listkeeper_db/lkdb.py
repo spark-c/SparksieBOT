@@ -44,7 +44,6 @@ Collection.items = relationship("Item", back_populates="collection", lazy="joine
 
 Base.metadata.create_all(engine)
 session = Session()
-master_collection: List[Collection] = session.query(Collection).all()
 
 
 ## HELPER FUNCTIONS ##
@@ -56,7 +55,6 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
         try:
             session.add(new_colx)
             session.commit()
-            master_collection.append(new_colx)
             return new_colx
         except:
             raise DatabaseError(
@@ -78,11 +76,12 @@ def create_item(name: str, item_id: str, collection_id: str, note: str="") -> No
 
 
 ## Read
-def get_guild_collections(guild_id: str) -> Union[List[Collection], None]:
-    pass
+def get_guild_collections(guild_id: str) -> List[Collection]:
+    results: List[Collection] = session.query(Collection).filter(Collection.guild_id==guild_id).all()
+    return results
 
 
-def get_items(collection: Collection):# -> List[Item]:
+def get_items(collection_id: str) -> Union[List[Item], None]:
     pass
 
 
@@ -99,19 +98,19 @@ def delete_item(item: Item) -> None:
 
 
 ## Search
-def search_collections_by_id(collection_id: str) -> Union[Collection, None]:
-    for collection in master_collection:
-        if collection.collection_id == collection_id:
-            return collection
-    return None
+# def search_collections_by_id(collection_id: str) -> Union[Collection, None]:
+#     for collection in master_collection:
+#         if collection.collection_id == collection_id:
+#             return collection
+#     return None
 
 
-def search_collections_by_guild_id(guild_id: str) -> List[Collection]:
-    results: List[Collection] = list()
-    for collection in master_collection:
-        if collection.guild_id == guild_id:
-            results.append(collection)
-    return results
+# def search_collections_by_guild_id(guild_id: str) -> List[Collection]:
+#     results: List[Collection] = list()
+#     for collection in master_collection:
+#         if collection.guild_id == guild_id:
+#             results.append(collection)
+#     return results
 
 
 ## ID Management
