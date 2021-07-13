@@ -33,12 +33,22 @@ class Listkeeper(commands.Cog):
             collection_id=lkdb.generate_id(),
             guild_id=ctx.guild.id
         )
-        Listkeeper.selected_list = new_colx
+        if new_colx:
+            Listkeeper.selected_list = new_colx
+            await ctx.channel.send(f"Successfully created {new_colx.name}!")
+        else:
+            await ctx.channel.send("Something went wrong!")
 
 
     @commands.command()
-    async def additem(self, ctx) -> None:
+    async def additem(self, ctx, *args) -> None:
         pass
+        # if args[0].startswith("-"):
+        #     if args[0].tolower() in ["-l", "-list"]:
+        #         # do work
+        #     else:
+
+            
 
 
     ## Read
