@@ -90,10 +90,14 @@ def get_guild_collections(guild_id: str) -> List[Collection]:
             .filter(Collection.guild_id==guild_id)
             .all()
         )
+    
+    if not results:
+        raise DatabaseError("No results found!")
+
     return results
 
 
-def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
+def get_collection_by_name(name: str, guild_id: str) -> Collection:
     with Session() as session:
         result: Collection = (
             session.query(Collection)
@@ -101,13 +105,18 @@ def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
             .filter(Collection.guild_id == guild_id)
             .first()
         )
+
+    if result is None:
+        raise DatabaseError(f"Collection '{name}' not found!")
+
     return result
 
 
 def get_items(collection_name: str, guild_id: str) -> List[Item]:
-    found_colx: Union[Collection, None] = get_collection_by_name(collection_name, guild_id)
-    if not found_colx:
-        return []
+    try:
+        found_colx: Union[Collection, None] = get_collection_by_name(collection_name, guild_id)
+    except DatabaseError as e:
+        raise DatabaseError(e)
 
     with Session() as session:
         results: List[Item] = (
@@ -115,6 +124,10 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
             .filter(Item.collection_id == found_colx.collection_id)
             .all()
         )
+
+    if not results:
+        raise DatabaseError(f"No items found for collection '{collection_name}'!")
+
     return results
 
 
@@ -123,14 +136,18 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
 
 ## Delete
 def delete_collection_by_name(name: str, guild_id: str) -> None:
-    colx_to_delete: Union[Collection, None] = (
-        get_collection_by_name(name=name, guild_id=guild_id)
-    )
-    if colx_to_delete is not None:
+    try:
+        colx_to_delete: Collection = (
+            get_collection_by_name(name=name, guild_id=guild_id)
+        )
+    except DatabaseError as e:
+        raise DatabaseError(e)
+
+    try:
         with Session() as session: 
             session.delete(colx_to_delete)
             session.commit()
-    else:
+    except:
         raise DatabaseError()
 
 
