@@ -1,5 +1,4 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
-from discord import guild
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
@@ -15,6 +14,7 @@ class DatabaseError(Exception):
 
 # TODO: handle possibility of db downtime
 # TODO: use envvar for db address
+
 engine = create_engine('postgresql://localhost/baby-bot-dev', echo=False)
 Base = declarative_base()
 Session = sessionmaker(bind=engine, expire_on_commit=False)
