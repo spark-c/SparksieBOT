@@ -74,7 +74,22 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
 
 def create_item(name: str, note: str, item_id: str, collection_id: str) -> Union[Item, None]:
     note = "" if note is None else note
-    pass
+    new_item: Item = Item(name=name, note=note, item_id=item_id, collection_id=collection_id)
+    with Session() as session:
+        try:
+            session.add(new_item)
+            session.commit()
+            session.expunge(new_item)
+        except:
+            raise DatabaseError(
+                "Failed to add new entry to database!\n" +
+                "new_item\n" +
+                f"name: {name}\n" +
+                f"note: {note}\n" +
+                f"item_id: {item_id}\n" +
+                f"collection_id: {collection_id}\n"
+            )
+    return new_item
 
 
 ## Read
