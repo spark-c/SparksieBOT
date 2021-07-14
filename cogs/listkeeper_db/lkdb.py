@@ -18,7 +18,7 @@ class DatabaseError(Exception):
 # TODO: use envvar for db address
 engine = create_engine('postgresql://localhost/baby-bot-dev', echo=False)
 Base = declarative_base()
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, expire_on_commit=False)
 
 
 class Collection(Base):
