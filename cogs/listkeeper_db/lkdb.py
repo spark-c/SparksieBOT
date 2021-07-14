@@ -43,7 +43,7 @@ class Item(Base):
 Collection.items = relationship("Item", back_populates="collection", lazy="joined")
 
 Base.metadata.create_all(engine)
-session = Session()
+# session = Session()
 
 
 ## HELPER FUNCTIONS ##
@@ -55,6 +55,7 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
         try:
             session.add(new_colx)
             session.commit()
+            session.expunge(new_colx) # We'll see if this line does what we need
             return new_colx
         except:
             raise DatabaseError(
@@ -71,14 +72,31 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
         #     session.add(new_colx)
 
 
-def create_item(name: str, item_id: str, collection_id: str, note: str="") -> None:
+def create_item(name: str, note: str, item_id: str, collection_id: str) -> Union[Item, None]:
+    note = "" if note is None else note
     pass
 
 
 ## Read
 def get_guild_collections(guild_id: str) -> List[Collection]:
-    results: List[Collection] = session.query(Collection).filter(Collection.guild_id==guild_id).all()
+    with Session() as session:
+        results: List[Collection] = (
+            session.query(Collection)
+            .filter(Collection.guild_id==guild_id)
+            .all()
+        )
     return results
+
+
+def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
+    with Session() as session:
+        result: Collection = (
+            session.query(Collection)
+            .filter(Collection.name == name)
+            .filter(Collection.guild_id == guild_id)
+            .first()
+        )
+    return result
 
 
 def get_items(collection_id: str) -> Union[List[Item], None]:
