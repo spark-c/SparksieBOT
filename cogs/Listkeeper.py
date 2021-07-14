@@ -2,7 +2,7 @@
 # July 2021
 # Collin Sparks
 
-from cogs.listkeeper_db.lkdb import DatabaseError
+from cogs.listkeeper_db.lkdb import DatabaseError, delete_collection_by_name
 import discord
 from discord.ext import commands
 import asyncio
@@ -160,8 +160,15 @@ class Listkeeper(commands.Cog):
 
     # Delete
     @commands.command()
-    async def rmlist(self, ctx) -> None:
-        pass
+    async def rmlist(self, ctx, collection_name) -> None:
+        try:
+            lkdb.delete_collection_by_name(
+                name=collection_name,
+                guild_id=str(ctx.guild.id)
+            )
+            await ctx.channel.send(f"Deleted list {collection_name}!")
+        except DatabaseError:
+            await ctx.channel.send("Could not complete database transaction!")
 
 
     @commands.command()
