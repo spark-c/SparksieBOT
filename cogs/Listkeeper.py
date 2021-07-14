@@ -2,7 +2,7 @@
 # July 2021
 # Collin Sparks
 
-from cogs.listkeeper_db.lkdb import DatabaseError, delete_collection_by_name
+from cogs.listkeeper_db.lkdb import DatabaseError
 import discord
 from discord.ext import commands
 import asyncio
@@ -172,8 +172,50 @@ class Listkeeper(commands.Cog):
 
 
     @commands.command()
-    async def rmitem(self, ctx) -> None:
-        pass
+    async def rmitem(self, ctx, *args) -> None:
+        if not (args[0].startswith("-") or Listkeeper.selected_list):
+            await ctx.channel.send("No list selected!")
+            return
+
+        if args[0].startswith("-"):
+            # handle misuse
+            if len(args) > 3:
+                await ctx.channel.send("Usage: !rmitem [-l <listname>] <item-name>")
+                return
+
+            if args[0].lower() not in ["-l", "-list"]:
+                await ctx.channel.send(f"Invalid argument: {args[0]}!")
+                return
+            
+            if not args[1]:
+                await ctx.channel.send("Provide a list name: !additem [-l <listname>] <item-name>")
+                return
+
+            try:
+                Listkeeper.selected_list = (
+                    lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
+                )
+            except DatabaseError as e:
+                print(e)
+                await ctx.channel.send(f"Couldn't find list! Error:\n{e}")
+            
+            # clean args
+            args = args[2:]
+
+        if Listkeeper.selected_list is None: # for typechecker
+            return
+        try:
+            lkdb.delete_item(
+                collection_name=Listkeeper.selected_list.name,
+                guild_id=str(ctx.guild.id),
+                item_name=args[0]
+            )
+            await ctx.channel.send(f"Deleted item '{args[0]}'!")
+        except DatabaseError as e:
+            print(e)
+            await ctx.channel.send(f"Couldn't delete item! Error:\n{e}")
+        
+
 
 
     # Utility
@@ -183,7 +225,13 @@ class Listkeeper(commands.Cog):
 
 
 # ## Helper Functions
-def create_embed(type: str, *, collection: Optional[Collection] = None, all_collections: Optional[List[Collection]] = None) -> discord.Embed:
+def create_embed(
+    type: str, 
+    *, 
+    collection: Optional[Collection] = None, 
+    all_collections: Optional[List[Collection]] = None
+    ) -> discord.Embed:
+
     if type not in ['collection', 'all_collections']:
         raise ValueError("Parameter 'type' must be str 'collection' or 'all_collections'")
     
