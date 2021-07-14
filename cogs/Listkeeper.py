@@ -34,17 +34,19 @@ class Listkeeper(commands.Cog):
         if len(args) == 2:
             desc = args[1]
 
-        new_colx: Union[Collection, None] = lkdb.create_collection(
-            name=name,
-            description=desc,
-            collection_id=lkdb.generate_id(),
-            guild_id=str(ctx.guild.id)
-        )
-        if new_colx:
+        try:
+            new_colx: Collection = lkdb.create_collection(
+                name=name,
+                description=desc,
+                collection_id=lkdb.generate_id(),
+                guild_id=str(ctx.guild.id)
+            )
             Listkeeper.selected_list = new_colx
             await ctx.channel.send(f"Successfully created {new_colx.name}!")
-        else:
-            await ctx.channel.send("Could not create list!")
+
+        except DatabaseError as e:
+            await ctx.channel.send(f"Could not create list! Error:\n{e}")
+            return
 
 
     @commands.command()
@@ -65,13 +67,14 @@ class Listkeeper(commands.Cog):
                 return
             
             # query for a list matching given name
-            found: Union[Collection, None] = (
-                lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
-            )
-            if not found:
-                await ctx.channel.send(f"No list found with name {args[1]}!")
+            try:
+                found: Union[Collection, None] = (
+                    lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
+                )
+                Listkeeper.selected_list = found
+            except DatabaseError as e:
+                await ctx.channel.send(f"Could not find list! Error:\n{e}")
                 return
-            Listkeeper.selected_list = found
 
             # clean args
             args = args[2:]
@@ -86,27 +89,29 @@ class Listkeeper(commands.Cog):
         if len(args) == 2:
             note = args[1]
 
-        new_item: Union[Item, None] = lkdb.create_item(
-            name=name,
-            note=note,
-            item_id=lkdb.generate_id(),
-            collection_id=Listkeeper.selected_list.collection_id
-        )
-        if new_item:
+        try:
+            new_item: Item = lkdb.create_item(
+                name=name,
+                note=note,
+                item_id=lkdb.generate_id(),
+                collection_id=Listkeeper.selected_list.collection_id
+            )
             await ctx.channel.send(f"Successfully created item {new_item.name}")
-        else:
-            await ctx.channel.send(f"Could not create item!")      
+        except DatabaseError as e:
+            await ctx.channel.send(f"Could not create item! Error:\n{e}")
+            return
 
 
     ## Read
     @commands.command()
     async def listall(self, ctx) -> None:
-        tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
-        if tmp:
+        try:
+            tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
             embed: discord.Embed = create_embed(type='all_collections', all_collections=tmp)
             await ctx.channel.send(embed=embed)
-        else:
-            await ctx.channel.send("No lists found!")
+        except DatabaseError as e:
+            await ctx.channel.send(f"Nothing found! Error:\n{e}")
+            return
 
 
     @commands.command()
@@ -119,32 +124,33 @@ class Listkeeper(commands.Cog):
             await ctx.channel.send("Please supply list name: !list <listname>")
             return
 
-        if args:
-            new_colx: Union[Collection, None] = (
-                lkdb.get_collection_by_name(name=args[0], guild_id=str(ctx.guild.id))
-            )
-            if new_colx:
-                Listkeeper.selected_list = new_colx
-            else:
-                await ctx.channel.send(f"No list found by name {args[0]}!")
-                return
-        # refreshes the selected_list; (no args were passed but there is a selected list)
-        elif Listkeeper.selected_list is not None: # condition present to satisfy type annots
+        if (Listkeeper.selected_list) and (not args):
+            # refreshes the selected_list; (no args were passed but there is a selected list)
             try:
-                updated_colx: Union[Collection, None] = lkdb.get_collection_by_name(
+                updated_colx: Collection = lkdb.get_collection_by_name(
                     name=Listkeeper.selected_list.name,
                     guild_id=str(ctx.guild.id)
                 )
                 Listkeeper.selected_list = updated_colx
-            except :
-                await ctx.channel.send(f"Attempted to refresh list but could not!")
+            except DatabaseError as e:
+                await ctx.channel.send(f"Attempted to refresh list but could not! Error:\n{e}")
+
+        if args:
+            try:
+                new_colx: Collection = (
+                    lkdb.get_collection_by_name(name=args[0], guild_id=str(ctx.guild.id))
+                )
+                Listkeeper.selected_list = new_colx
+            except DatabaseError as e:
+                await ctx.channel.send(f"Could not find list! Error:\n{e}")
+                return
         
         # by now, selected_list is the most recent version of whatever list we're using
         if Listkeeper.selected_list is not None:
             embed: discord.Embed = create_embed(type='collection', collection=Listkeeper.selected_list)
             await ctx.channel.send(embed=embed)
         else:
-            await ctx.channel.send("Something went wrong!")
+            await ctx.channel.send("Something went wrong! No list was selected.")
         
 
     ## Update
@@ -167,8 +173,8 @@ class Listkeeper(commands.Cog):
                 guild_id=str(ctx.guild.id)
             )
             await ctx.channel.send(f"Deleted list {collection_name}!")
-        except DatabaseError:
-            await ctx.channel.send("Could not complete database transaction!")
+        except DatabaseError as e:
+            await ctx.channel.send(f"Could not remove list! Error:\n{e}")
 
 
     @commands.command()
@@ -196,8 +202,7 @@ class Listkeeper(commands.Cog):
                     lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
                 )
             except DatabaseError as e:
-                print(e)
-                await ctx.channel.send(f"Couldn't find list! Error:\n{e}")
+                await ctx.channel.send(f"Couldn't find that list! Error:\n{e}")
             
             # clean args
             args = args[2:]
@@ -212,8 +217,7 @@ class Listkeeper(commands.Cog):
             )
             await ctx.channel.send(f"Deleted item '{args[0]}'!")
         except DatabaseError as e:
-            print(e)
-            await ctx.channel.send(f"Couldn't delete item! Error:\n{e}")
+            await ctx.channel.send(f"Couldn't delete that item! Error:\n{e}")
         
 
 
