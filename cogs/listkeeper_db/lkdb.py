@@ -27,7 +27,7 @@ except: # when hosted from Heroku / envvars
 try:
     engine = create_engine(DATABASE_URL, echo=False)
 except:
-    raise DatabaseError(f"Unable to connect to the database! Address used: {DB_ADDRESS}")
+    raise DatabaseError(f"Unable to connect to the database! Address used: {DATABASE_URL}")
 Base = declarative_base()
 Session = sessionmaker(bind=engine, expire_on_commit=False)
 
