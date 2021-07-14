@@ -1,4 +1,5 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
+from discord import guild
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
@@ -151,8 +152,32 @@ def delete_collection_by_name(name: str, guild_id: str) -> None:
         raise DatabaseError()
 
 
-def delete_item(item: Item) -> None:
-    pass
+def delete_item(collection_name: str, guild_id: str, item_name: str) -> None:
+    with Session() as session:
+        try:
+            parent_collection: Collection = (
+                get_collection_by_name(name=collection_name, guild_id=guild_id)
+            )
+        except DatabaseError as e:
+            raise DatabaseError(e)
+        
+        # TODO abstract this into its own function
+        item_to_delete: Item = (
+            session.query(Item)
+            .filter(Item.collection_id==parent_collection.collection_id)
+            .filter(Item.name==item_name)
+            .first()
+        )
+        if item_to_delete is None:
+            raise DatabaseError(f"Item {item_name} not found!")
+
+        try:
+            session.delete(item_to_delete)
+            session.commit()
+        except:
+            raise DatabaseError(f"Unable to delete item '{item_name}'")
+        
+
 
 
 ## ID Management
