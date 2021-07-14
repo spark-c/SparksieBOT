@@ -29,7 +29,10 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def newlist(self, ctx, *args) -> None:
         name: str = args[0]
-        desc: Union[str, None] = args[1] if args[1] else None
+        desc: Union[str, None] = None
+        if len(args) == 2:
+            desc = args[1]
+
         new_colx: Union[Collection, None] = lkdb.create_collection(
             name=name,
             description=desc,
