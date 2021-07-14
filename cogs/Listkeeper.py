@@ -52,7 +52,7 @@ class Listkeeper(commands.Cog):
                 await ctx.channel.send("Usage: !additem [-l <listname>] <item-name> [<item-note>]")
                 return
 
-            if args[0].tolower() not in ["-l", "-list"]:
+            if args[0].lower() not in ["-l", "-list"]:
                 await ctx.channel.send(f"Invalid argument: {args[0]}!")
                 return
             
@@ -79,6 +79,7 @@ class Listkeeper(commands.Cog):
 
         name: str = args[0]
         note: str = args[1] if args[1] else ""
+
         new_item: Union[Item, None] = lkdb.create_item(
             name=name,
             note=note,
