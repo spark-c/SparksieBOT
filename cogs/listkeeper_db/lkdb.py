@@ -109,7 +109,7 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
     with Session() as session:
         results: List[Item] = (
             session.query(Item)
-            .filter(Item.collection_id == found_colx.id)
+            .filter(Item.collection_id == found_colx.collection_id)
             .all()
         )
         session.expunge_all()
