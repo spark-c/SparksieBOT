@@ -55,7 +55,6 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
         try:
             session.add(new_colx)
             session.commit()
-            session.expunge(new_colx) # We'll see if this line does what we need
             return new_colx
         except:
             raise DatabaseError(
@@ -79,7 +78,6 @@ def create_item(name: str, note: str, item_id: str, collection_id: str) -> Union
         try:
             session.add(new_item)
             session.commit()
-            session.expunge(new_item)
         except:
             raise DatabaseError(
                 "Failed to add new entry to database!\n" +
@@ -100,7 +98,6 @@ def get_guild_collections(guild_id: str) -> List[Collection]:
             .filter(Collection.guild_id==guild_id)
             .all()
         )
-        session.expunge_all()
     return results
 
 
@@ -112,7 +109,6 @@ def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
             .filter(Collection.guild_id == guild_id)
             .first()
         )
-        session.expunge(result)
     return result
 
 
@@ -127,7 +123,6 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
             .filter(Item.collection_id == found_colx.collection_id)
             .all()
         )
-        session.expunge_all()
     return results
 
 
