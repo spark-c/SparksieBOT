@@ -10,8 +10,9 @@ from typing import Union, Dict, List
 try:
     from cogs.listkeeper_db.lkdb import Collection, Item
     import cogs.listkeeper_db.lkdb as lkdb
-except Exception as e:
+except ImportError as e:
     print(e)
+    raise ImportError(e)
 
 
 class Listkeeper(commands.Cog):
@@ -58,7 +59,9 @@ class Listkeeper(commands.Cog):
                 return
             
             # query for a list matching given name
-            found: Collection = lkdb.get_collection_by_name(args[1], str(ctx.guild.id))
+            found: Union[Collection, None] = (
+                lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
+            )
             if not found:
                 await ctx.channel.send(f"No list found with name {args[1]}!")
                 return
