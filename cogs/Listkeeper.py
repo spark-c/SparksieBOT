@@ -7,6 +7,8 @@ from discord.ext import commands
 import asyncio
 from typing import Union, Dict, List
 
+from sqlalchemy.sql.expression import select
+
 try:
     from cogs.listkeeper_db.lkdb import Collection, Item
     import cogs.listkeeper_db.lkdb as lkdb
@@ -104,8 +106,41 @@ class Listkeeper(commands.Cog):
 
 
     @commands.command()
-    async def list(self, ctx) -> None:
-        pass
+    async def list(self, ctx, *args) -> None:
+        if len(args) > 1:
+            await ctx.channel.send("Too many arguments! Use quotes if the list name has spaces.")
+            return
+
+        if not args and Listkeeper.selected_list is None:
+            await ctx.channel.send("Please supply list name: !list <listname>")
+            return
+
+        if args:
+            new_colx: Union[Collection, None] = (
+                lkdb.get_collection_by_name(name=args[0], guild_id=str(ctx.guild.id))
+            )
+            if new_colx:
+                Listkeeper.selected_list = new_colx
+            else:
+                await ctx.channel.send(f"No list found by name {args[0]}!")
+                return
+
+        if Listkeeper.selected_list is not None:
+            results: List[Item] = (
+                lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=ctx.guild.id)
+            )
+            message: str = (
+                "Here is the list:\n" +
+                f"**{Listkeeper.selected_list.name}**" +
+                f"*{Listkeeper.selected_list.description}*" +
+                ("\n").join([f"{item.name}: {item.note}\n" for item in results])
+            )
+            await ctx.channel.send(message)
+        else:
+            await ctx.channel.send("Something went wrong!")
+        
+                
+
 
 
     ## Update
