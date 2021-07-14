@@ -2,6 +2,7 @@
 # July 2021
 # Collin Sparks
 
+from cogs.listkeeper_db.lkdb import DatabaseError
 import discord
 from discord.ext import commands
 import asyncio
@@ -127,18 +128,20 @@ class Listkeeper(commands.Cog):
             else:
                 await ctx.channel.send(f"No list found by name {args[0]}!")
                 return
-
+        # refreshes the selected_list; (no args were passed but there is a selected list)
+        elif Listkeeper.selected_list is not None: # condition present to satisfy type annots
+            try:
+                updated_colx: Union[Collection, None] = lkdb.get_collection_by_name(
+                    name=Listkeeper.selected_list.name,
+                    guild_id=str(ctx.guild.id)
+                )
+                Listkeeper.selected_list = updated_colx
+            except :
+                await ctx.channel.send(f"Attempted to refresh list but could not!")
+        
+        # by now, selected_list is the most recent version of whatever list we're using
         if Listkeeper.selected_list is not None:
-            # results: List[Item] = (
-            #     lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=str(ctx.guild.id))
-            # )
-            # message: str = (
-            #     "Here is the list:\n" +
-            #     f"**{Listkeeper.selected_list.name}**" +
-            #     f"*{Listkeeper.selected_list.description}*" +
-            #     ("\n").join([f"{item.name}: {item.note}\n" for item in results])
-            # )
-            embed: discord.Embed = create_embed(Listkeeper.selected_list)
+            embed: discord.Embed = create_embed(type='collection', collection=Listkeeper.selected_list)
             await ctx.channel.send(embed=embed)
         else:
             await ctx.channel.send("Something went wrong!")
@@ -185,16 +188,34 @@ class Listkeeper(commands.Cog):
 
 
 # ## Helper Functions
-def create_embed(collection: Collection) -> discord.Embed:
-    embed: discord.Embed = discord.Embed(
-        title=collection.name,
-        description=collection.description,
-        color=0x109319
-    )
-    # TODO add logic for handling overflow (>25 fields or 6000 characters)
-    for item in collection.items:
-        embed.add_field(name=item.name, value=f"> {item.note}", inline=False)
-    return embed
+def create_embed(type: str, collection: Collection, guild_id: str="") -> discord.Embed:
+    if type not in ['collection', 'all_collections']:
+        raise ValueError("Parameter 'type' must be str 'collection' or 'all_collections'")
+    
+    if type == 'collection':
+        collection_embed: discord.Embed = discord.Embed(
+            title=collection.name,
+            description=collection.description,
+            color=0x109319
+        )
+        # TODO add logic for handling overflow (>25 fields or 6000 characters)
+        for item in collection.items:
+            collection_embed.add_field(name=item.name, value=f"> {item.note}", inline=False)
+        return collection_embed
+    
+    if type == 'all_collections':
+        all_collections_embed: discord.Embed = discord.Embed(
+            title=f"Lists:",
+            description="All lists present for this server.",
+            color=0x109319
+        )
+        # TODO add logic for handling overflow (>25 fields or 6000 characters)
+        for colx in lkdb.get_guild_collections(guild_id=guild_id):
+            all_collections_embed.add_field(name=colx.name, value=f"> {colx.description}", inline=False)
+        return all_collections_embed
+    
+    return discord.Embed(title="Something went wrong!", description="I made it to the end of create_embed() and nothing caught me!")
+
 
 
 def setup(bot):
