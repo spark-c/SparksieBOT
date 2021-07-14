@@ -16,16 +16,16 @@ class DatabaseError(Exception):
 # TODO: handle possibility of db downtime
 
 # config / envvars
-DB_ADDRESS: Union[str, None] = None
+DATABASE_URL: Union[str, None] = None
 try:
     with open("./config.json") as f: # when hosted from a normal filesystem
-        DB_ADDRESS = json.load(f)["DB_ADDRESS"]
+        DATABASE_URL = json.load(f)["DB_ADDRESS"]
 except: # when hosted from Heroku / envvars
-    DB_ADDRESS = os.environ["DB_ADDRESS"]
+    DATABASE_URL = os.environ["DB_ADDRESS"]
 
 
 try:
-    engine = create_engine(DB_ADDRESS, echo=False)
+    engine = create_engine(DATABASE_URL, echo=False)
 except:
     raise DatabaseError(f"Unable to connect to the database! Address used: {DB_ADDRESS}")
 Base = declarative_base()
