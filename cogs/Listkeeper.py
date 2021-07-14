@@ -48,7 +48,7 @@ class Listkeeper(commands.Cog):
         ## Check if list name is passed
         if args[0].startswith("-"):
             # handle misuse
-            if len(args) > 3:
+            if len(args) > 4:
                 await ctx.channel.send("Usage: !additem [-l <listname>] <item-name> [<item-note>]")
                 return
 
