@@ -27,7 +27,7 @@ class Collection(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     collection_id = Column(String, primary_key=True, nullable=False)
-    items = relationship("Item", back_populates="collection", lazy="joined")
+    items = relationship("Item", back_populates="collection", lazy="joined", cascade="all, delete-orphan")
     guild_id = Column(String, nullable=False)
 
 
@@ -129,8 +129,16 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
 
 
 ## Delete
-def delete_collection(collection: Collection) -> None:
-    pass
+def delete_collection_by_name(name: str, guild_id: str) -> None:
+    colx_to_delete: Union[Collection, None] = (
+        get_collection_by_name(name=name, guild_id=guild_id)
+    )
+    if colx_to_delete is not None:
+        with Session() as session: 
+            session.delete(colx_to_delete)
+            session.commit()
+    else:
+        raise DatabaseError()
 
 
 def delete_item(item: Item) -> None:
