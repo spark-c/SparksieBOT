@@ -132,11 +132,13 @@ def delete_item(item: Item) -> None:
 
 
 ## ID Management
-tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
-used_ids: Set[str] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
+with Session() as session:
+    tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
+    used_ids: Set[str] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
 
 def generate_id() -> str:
     while True: # loop until we get a unique ID
         id: str = secrets.token_hex(4)
         if id not in used_ids:
+            used_ids.add(id)
             return id
