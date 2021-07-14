@@ -103,8 +103,8 @@ class Listkeeper(commands.Cog):
     async def listall(self, ctx) -> None:
         tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
         if tmp:
-            collection_names: str = "\n".join([colx.name for colx in tmp])
-            await ctx.channel.send(f"Here are your lists:\n{collection_names}")
+            embed: discord.Embed = create_embed(type='all_collections', all_collections=tmp)
+            await ctx.channel.send(embed=embed)
         else:
             await ctx.channel.send("No lists found!")
 
@@ -175,19 +175,8 @@ class Listkeeper(commands.Cog):
         pass
 
 
-    # Debug
-    @commands.command()
-    async def testitems(self, ctx) -> None:
-        if not Listkeeper.selected_list:
-            await ctx.channel.send("No selected list!")
-        else:
-            embed: discord.Embed = create_embed(type='all_collections', guild_id=str(ctx.guild.id))
-            await ctx.channel.send(embed=embed)
-            
-
-
 # ## Helper Functions
-def create_embed(type: str, *, collection: Optional[Collection] = None, guild_id: Optional[str] = None) -> discord.Embed:
+def create_embed(type: str, *, collection: Optional[Collection] = None, all_collections: Optional[List[Collection]] = None) -> discord.Embed:
     if type not in ['collection', 'all_collections']:
         raise ValueError("Parameter 'type' must be str 'collection' or 'all_collections'")
     
@@ -202,14 +191,14 @@ def create_embed(type: str, *, collection: Optional[Collection] = None, guild_id
             collection_embed.add_field(name=item.name, value=f"> {item.note}", inline=False)
         return collection_embed
     
-    if type == 'all_collections' and guild_id:
+    if type == 'all_collections' and all_collections:
         all_collections_embed: discord.Embed = discord.Embed(
             title=f"Lists:",
             description="All lists present for this server.",
             color=0x109319
         )
         # TODO add logic for handling overflow (>25 fields or 6000 characters)
-        for colx in lkdb.get_guild_collections(guild_id=guild_id):
+        for colx in all_collections:
             all_collections_embed.add_field(name=colx.name, value=f"> {colx.description}", inline=False)
         return all_collections_embed
     
