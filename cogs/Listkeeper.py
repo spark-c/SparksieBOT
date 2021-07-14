@@ -34,7 +34,7 @@ class Listkeeper(commands.Cog):
             name=name,
             description=desc,
             collection_id=lkdb.generate_id(),
-            guild_id=ctx.guild.id
+            guild_id=str(ctx.guild.id)
         )
         if new_colx:
             Listkeeper.selected_list = new_colx
@@ -127,7 +127,7 @@ class Listkeeper(commands.Cog):
 
         if Listkeeper.selected_list is not None:
             results: List[Item] = (
-                lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=ctx.guild.id)
+                lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=str(ctx.guild.id))
             )
             message: str = (
                 "Here is the list:\n" +
