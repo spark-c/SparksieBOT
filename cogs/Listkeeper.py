@@ -92,10 +92,7 @@ class Listkeeper(commands.Cog):
         if new_item:
             await ctx.channel.send(f"Successfully created item {new_item.name}")
         else:
-            await ctx.channel.send(f"Could not create item!")
-
-
-            
+            await ctx.channel.send(f"Could not create item!")      
 
 
     ## Read
@@ -143,9 +140,6 @@ class Listkeeper(commands.Cog):
         else:
             await ctx.channel.send("Something went wrong!")
         
-                
-
-
 
     ## Update
     @commands.command()
@@ -173,6 +167,31 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def listundo(self, ctx) -> None:
         pass
+
+
+    # Debug
+    @commands.command()
+    async def testitems(self, ctx) -> None:
+        if not Listkeeper.selected_list:
+            await ctx.channel.send("No selected list!")
+        else:
+            item_names: List[str] = [f"{item.name}" for item in Listkeeper.selected_list.items]
+            message: str = ("\n").join(item_names)
+            await ctx.channel.send(f"items:\n{message}")
+            
+
+
+# ## Helper Functions
+def create_embed(collection: Collection) -> discord.Embed:
+    embed: discord.Embed = discord.Embed(
+        title=collection.name,
+        description=collection.description,
+        color=0x109319
+    )
+    # TODO add logic for handling overflow (>25 fields or 6000 characters)
+    for item in collection.items:
+        embed.add_field(name=item.name, value=f"> {item.note}", inline=False)
+    return embed
 
 
 def setup(bot):
