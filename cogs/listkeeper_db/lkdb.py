@@ -8,8 +8,6 @@ from typing import Union, List, Set, Any
 
 class DatabaseError(Exception):
     def __init__(self, message="Unable to complete database operation!", object_to_debug: Any=None) -> None:
-        # self.object_debug: str = object_to_debug.debug()
-        # self.message: str = message + "\n" + self.object_debug
         self.message: str = message
         super().__init__(self.message)
 
@@ -42,7 +40,6 @@ class Item(Base):
 
 
 Base.metadata.create_all(engine)
-# session = Session()
 
 
 ## HELPER FUNCTIONS ##
@@ -64,10 +61,6 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
                 f"collection_id: {collection_id}\n" +
                 f"guild_id: {guild_id}\n"
             )
-
-        ## Commented the below so we will fail loudly during development
-        # with session.begin(): # SessionTransaction object; automatically commit()s at end of context block if no exceptions.
-        #     session.add(new_colx)
 
 
 def create_item(name: str, note: Union[str, None], item_id: str, collection_id: str) -> Union[Item, None]:
@@ -143,22 +136,6 @@ def delete_collection_by_name(name: str, guild_id: str) -> None:
 
 def delete_item(item: Item) -> None:
     pass
-
-
-## Search
-# def search_collections_by_id(collection_id: str) -> Union[Collection, None]:
-#     for collection in master_collection:
-#         if collection.collection_id == collection_id:
-#             return collection
-#     return None
-
-
-# def search_collections_by_guild_id(guild_id: str) -> List[Collection]:
-#     results: List[Collection] = list()
-#     for collection in master_collection:
-#         if collection.guild_id == guild_id:
-#             results.append(collection)
-#     return results
 
 
 ## ID Management
