@@ -70,7 +70,7 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
         #     session.add(new_colx)
 
 
-def create_item(name: str, note: str, item_id: str, collection_id: str) -> Union[Item, None]:
+def create_item(name: str, note: Union[str, None], item_id: str, collection_id: str) -> Union[Item, None]:
     note = "" if note is None else note
     new_item: Item = Item(name=name, note=note, item_id=item_id, collection_id=collection_id)
     with Session() as session:
