@@ -8,14 +8,8 @@ from discord.ext import commands
 import asyncio
 from typing import Union, Dict, List, Optional
 
-from sqlalchemy.sql.expression import select
-
-try:
-    from cogs.listkeeper_db.lkdb import Collection, Item
-    import cogs.listkeeper_db.lkdb as lkdb
-except ImportError as e:
-    print(e)
-    raise ImportError(e)
+from cogs.listkeeper_db.lkdb import Collection, Item
+import cogs.listkeeper_db.lkdb as lkdb
 
 
 class Listkeeper(commands.Cog):
@@ -218,8 +212,6 @@ class Listkeeper(commands.Cog):
             await ctx.channel.send(f"Deleted item '{args[0]}'!")
         except DatabaseError as e:
             await ctx.channel.send(f"Couldn't delete that item! Error:\n{e}")
-        
-
 
 
     # Utility
