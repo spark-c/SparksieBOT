@@ -99,8 +99,18 @@ def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
     return result
 
 
-def get_items(collection_id: str) -> Union[List[Item], None]:
-    pass
+def get_items(collection_name: str, guild_id: str) -> List[Item]:
+    found_colx: Union[Collection, None] = get_collection_by_name(collection_name, guild_id)
+    if not found_colx:
+        return []
+
+    with Session() as session:
+        results: List[Item] = (
+            session.query(Item)
+            .filter(Item.collection_id == found_colx.id)
+            .all()
+        )
+    return results
 
 
 ## Update TODO
