@@ -1,8 +1,9 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
+from sqlalchemy import create_engine, ForeignKey, Column, String
 import secrets
+import json
 
 from typing import Union, List, Set, Any
 
@@ -11,11 +12,15 @@ class DatabaseError(Exception):
         self.message: str = message
         super().__init__(self.message)
 
-
 # TODO: handle possibility of db downtime
-# TODO: use envvar for db address
 
-engine = create_engine('postgresql://localhost/baby-bot-dev', echo=False)
+with open("./config.json") as f:
+    DB_ADDRESS: str = json.load(f)["DB_ADDRESS"]
+
+try:
+    engine = create_engine(DB_ADDRESS, echo=False)
+except:
+    raise DatabaseError(f"Unable to connect to the database! Address used: {DB_ADDRESS}")
 Base = declarative_base()
 Session = sessionmaker(bind=engine, expire_on_commit=False)
 
