@@ -3,3 +3,4 @@ baby-bot-token.txt
 startatom.bat
 venv/
 __pycache__/
+config.json
