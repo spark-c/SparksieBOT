@@ -6,7 +6,7 @@ from cogs.listkeeper_db.lkdb import DatabaseError
 import discord
 from discord.ext import commands
 import asyncio
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Optional
 
 from sqlalchemy.sql.expression import select
 
@@ -181,18 +181,17 @@ class Listkeeper(commands.Cog):
         if not Listkeeper.selected_list:
             await ctx.channel.send("No selected list!")
         else:
-            item_names: List[str] = [f"{item.name}" for item in Listkeeper.selected_list.items]
-            message: str = ("\n").join(item_names)
-            await ctx.channel.send(f"items:\n{message}")
+            embed: discord.Embed = create_embed(type='all_collections', guild_id=str(ctx.guild.id))
+            await ctx.channel.send(embed=embed)
             
 
 
 # ## Helper Functions
-def create_embed(type: str, collection: Collection, guild_id: str="") -> discord.Embed:
+def create_embed(type: str, *, collection: Optional[Collection] = None, guild_id: Optional[str] = None) -> discord.Embed:
     if type not in ['collection', 'all_collections']:
         raise ValueError("Parameter 'type' must be str 'collection' or 'all_collections'")
     
-    if type == 'collection':
+    if type == 'collection' and collection:
         collection_embed: discord.Embed = discord.Embed(
             title=collection.name,
             description=collection.description,
@@ -203,7 +202,7 @@ def create_embed(type: str, collection: Collection, guild_id: str="") -> discord
             collection_embed.add_field(name=item.name, value=f"> {item.note}", inline=False)
         return collection_embed
     
-    if type == 'all_collections':
+    if type == 'all_collections' and guild_id:
         all_collections_embed: discord.Embed = discord.Embed(
             title=f"Lists:",
             description="All lists present for this server.",
