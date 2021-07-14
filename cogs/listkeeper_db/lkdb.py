@@ -45,7 +45,7 @@ Base.metadata.create_all(engine)
 
 ## HELPER FUNCTIONS ##
 ## Create
-def create_collection(name: str, description: Union[str, None], collection_id: str, guild_id: str) -> Union[Collection, None]:
+def create_collection(name: str, description: Union[str, None], collection_id: str, guild_id: str) -> Collection:
     description = "" if description == None else description # default argument "" (conditional expression)
     new_colx = Collection(name=name, description=description, collection_id=collection_id, guild_id=guild_id)
     with Session() as session:
@@ -64,7 +64,7 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
             )
 
 
-def create_item(name: str, note: Union[str, None], item_id: str, collection_id: str) -> Union[Item, None]:
+def create_item(name: str, note: Union[str, None], item_id: str, collection_id: str) -> Item:
     note = "" if note is None else note
     new_item: Item = Item(name=name, note=note, item_id=item_id, collection_id=collection_id)
     with Session() as session:
