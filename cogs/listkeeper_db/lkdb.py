@@ -85,6 +85,7 @@ def get_guild_collections(guild_id: str) -> List[Collection]:
             .filter(Collection.guild_id==guild_id)
             .all()
         )
+        session.expunge_all()
     return results
 
 
@@ -96,6 +97,7 @@ def get_collection_by_name(name: str, guild_id: str) -> Union[Collection, None]:
             .filter(Collection.guild_id == guild_id)
             .first()
         )
+        session.expunge(result)
     return result
 
 
@@ -110,6 +112,7 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
             .filter(Item.collection_id == found_colx.id)
             .all()
         )
+        session.expunge_all()
     return results
 
 
