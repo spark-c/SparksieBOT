@@ -81,7 +81,9 @@ class Listkeeper(commands.Cog):
             return
 
         name: str = args[0]
-        note: str = args[1] if args[1] else ""
+        note: Union[str, None] = None
+        if len(args) == 2:
+            note = args[1]
 
         new_item: Union[Item, None] = lkdb.create_item(
             name=name,
@@ -127,16 +129,17 @@ class Listkeeper(commands.Cog):
                 return
 
         if Listkeeper.selected_list is not None:
-            results: List[Item] = (
-                lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=str(ctx.guild.id))
-            )
-            message: str = (
-                "Here is the list:\n" +
-                f"**{Listkeeper.selected_list.name}**" +
-                f"*{Listkeeper.selected_list.description}*" +
-                ("\n").join([f"{item.name}: {item.note}\n" for item in results])
-            )
-            await ctx.channel.send(message)
+            # results: List[Item] = (
+            #     lkdb.get_items(collection_name=Listkeeper.selected_list.name, guild_id=str(ctx.guild.id))
+            # )
+            # message: str = (
+            #     "Here is the list:\n" +
+            #     f"**{Listkeeper.selected_list.name}**" +
+            #     f"*{Listkeeper.selected_list.description}*" +
+            #     ("\n").join([f"{item.name}: {item.note}\n" for item in results])
+            # )
+            embed: discord.Embed = create_embed(Listkeeper.selected_list)
+            await ctx.channel.send(embed=embed)
         else:
             await ctx.channel.send("Something went wrong!")
         
