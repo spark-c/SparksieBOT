@@ -1,9 +1,10 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, ForeignKey, Column, String
+from sqlalchemy import create_engine, ForeignKey, Column, String, func
 import secrets
 import json
+import os
 
 from typing import Union, List, Set, Any
 
@@ -14,8 +15,14 @@ class DatabaseError(Exception):
 
 # TODO: handle possibility of db downtime
 
-with open("./config.json") as f:
-    DB_ADDRESS: str = json.load(f)["DB_ADDRESS"]
+# config / envvars
+DB_ADDRESS: Union[str, None] = None
+try:
+    with open("./config.json") as f: # when hosted from a normal filesystem
+        DB_ADDRESS = json.load(f)["DB_ADDRESS"]
+except: # when hosted from Heroku / envvars
+    DB_ADDRESS = os.environ["DB_ADDRESS"]
+
 
 try:
     engine = create_engine(DB_ADDRESS, echo=False)
@@ -107,7 +114,7 @@ def get_collection_by_name(name: str, guild_id: str) -> Collection:
     with Session() as session:
         result: Collection = (
             session.query(Collection)
-            .filter(Collection.name == name)
+            .filter(func.lower(Collection.name) == name.lower())
             .filter(Collection.guild_id == guild_id)
             .first()
         )
@@ -170,7 +177,7 @@ def delete_item(collection_name: str, guild_id: str, item_name: str) -> None:
         item_to_delete: Item = (
             session.query(Item)
             .filter(Item.collection_id==parent_collection.collection_id)
-            .filter(Item.name==item_name)
+            .filter(func.lower(Item.name)==item_name.lower())
             .first()
         )
         if item_to_delete is None:
@@ -181,8 +188,6 @@ def delete_item(collection_name: str, guild_id: str, item_name: str) -> None:
             session.commit()
         except:
             raise DatabaseError(f"Unable to delete item '{item_name}'")
-        
-
 
 
 ## ID Management
