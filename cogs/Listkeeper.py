@@ -129,6 +129,7 @@ class Listkeeper(commands.Cog):
                 Listkeeper.selected_list = updated_colx
             except DatabaseError as e:
                 await ctx.channel.send(f"Attempted to refresh list but could not! Error:\n{e}")
+                return
 
         if args:
             try:
@@ -144,8 +145,10 @@ class Listkeeper(commands.Cog):
         if Listkeeper.selected_list is not None:
             embed: discord.Embed = create_embed(type='collection', collection=Listkeeper.selected_list)
             await ctx.channel.send(embed=embed)
+            return
         else:
             await ctx.channel.send("Something went wrong! No list was selected.")
+            return
         
 
     ## Update
