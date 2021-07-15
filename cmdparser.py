@@ -1,20 +1,20 @@
 # parses args for baby-bot functions
 import argparse
-import sys
+
 
 # Overriding ArgumentParser's default behavior of
 # printing err msg to stdout and sys.exit()ing.
 # That's not helpful to us, since we can't see stdout from discord.
 class ArgumentError(Exception):
-    def __init__(self, message, usage):
-        self.message = message
-        self.usage = usage
+    def __init__(self, message: str, usage: str) -> None:
+        self.message: str = message
+        self.usage: str = usage
         super().__init__(self.message)
 
 
 class LoudArgumentParser(argparse.ArgumentParser):
-    def error(self, message):
-        usage = (
+    def error(self, message) -> None:
+        usage: str = (
             self.format_usage()
             .replace("usage: cmdparser.py [-h] ", "")
             .replace("\n", "")
@@ -23,7 +23,7 @@ class LoudArgumentParser(argparse.ArgumentParser):
 
 
 ## Listkeeper parsers
-additem = LoudArgumentParser(description="Adds an item to a list.")
+additem: LoudArgumentParser = LoudArgumentParser(description="Adds an item to a list.")
 additem.add_argument(
     "-l", "-list", 
     metavar="<list-name>", 
@@ -42,21 +42,21 @@ additem.add_argument(
     default=None
 )
 
-list = LoudArgumentParser(description="Displays the given (or most recently used) list.")
+list: LoudArgumentParser = LoudArgumentParser(description="Displays the given (or most recently used) list.")
 list.add_argument("list_name",
     nargs="?",
     metavar="<list-name>", 
     help="Name of the list you'd like to display"
 )
 
-rmlist = LoudArgumentParser(description="Deletes the given list.")
+rmlist: LoudArgumentParser = LoudArgumentParser(description="Deletes the given list.")
 rmlist.add_argument(
     "list_name",
     metavar="<list-name>",
     help="Name of the list you'd like to delete"
 )
 
-rmitem = LoudArgumentParser(description="Deletes an item from a list.")
+rmitem: LoudArgumentParser = LoudArgumentParser(description="Deletes an item from a list.")
 rmitem.add_argument(
     "-l", "-list", 
     metavar="<list-name>", 
@@ -68,7 +68,7 @@ rmitem.add_argument(
     help="Name of the item to delete"
 )
 
-def fail():
+def fail() -> None:
     try:
         additem.parse_args(["little", "cindy", "lou", "who"])
     except ArgumentError as e:
