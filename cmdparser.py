@@ -1,7 +1,7 @@
 # parses args for baby-bot functions
 import argparse
 
-
+print("in parser")
 ## Listkeeper parsers
 additem = argparse.ArgumentParser(description="Adds an item to a list.")
 additem.add_argument(
