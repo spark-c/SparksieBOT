@@ -142,7 +142,7 @@ class Listkeeper(commands.Cog):
                 return
         
         # by now, selected_list is the most recent version of whatever list we're using
-        if str(ctx.guild.id) not in Listkeeper.selected_list:
+        if str(ctx.guild.id) in Listkeeper.selected_list:
             embed: discord.Embed = create_embed(
                 type='collection', 
                 collection=Listkeeper.selected_list[str(ctx.guild.id)]
