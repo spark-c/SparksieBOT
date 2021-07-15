@@ -6,14 +6,20 @@ import sys
 # printing err msg to stdout and sys.exit()ing.
 # That's not helpful to us, since we can't see stdout from discord.
 class ArgumentError(Exception):
-    def __init__(self, message="Argument Error!"):
+    def __init__(self, message, usage):
         self.message = message
+        self.usage = usage
         super().__init__(self.message)
 
 
 class LoudArgumentParser(argparse.ArgumentParser):
     def error(self, message):
-        raise ArgumentError(message)
+        usage = (
+            self.format_usage()
+            .replace("usage: cmdparser.py [-h] ", "")
+            .replace("\n", "")
+        )
+        raise ArgumentError(message, usage)
 
 
 ## Listkeeper parsers
@@ -66,4 +72,4 @@ def fail():
     try:
         additem.parse_args(["little", "cindy", "lou", "who"])
     except ArgumentError as e:
-        print("ERROR! Here:\n", e)
+        print("ERROR! Here:\n", e, "\n", e.usage)
