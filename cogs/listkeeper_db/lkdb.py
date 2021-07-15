@@ -21,7 +21,7 @@ try:
     with open("./config.json") as f: # when hosted from a normal filesystem
         DATABASE_URL = json.load(f)["DATABASE_URL"]
 except: # when hosted from Heroku / envvars
-    DATABASE_URL = os.environ["DATABASE_URL"]
+    DATABASE_URL = os.environ["DATABASE_URL"].replace("postgresql", "postgres") # Heroku demands "postgres" instead of "postgresql"
 
 
 try:
