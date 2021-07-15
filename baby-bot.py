@@ -4,6 +4,8 @@ from discord.ext import commands
 import random
 import asyncio
 import os
+import datetime as dt
+
 import groovycommands
 
 logger = logging.getLogger('discord')
@@ -14,14 +16,22 @@ logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix='!')
 
+last_glory = dt.datetime.now() - dt.timedelta(seconds=120)
+
 @bot.event
 async def on_ready():
     print('Logged in as {0.user}!'.format(bot))
 
 @bot.event
 async def on_message(message):
+    global last_glory
+
     if message.author == bot.user:
         return
+
+    if 'glory' in message.content.lower() and (dt.datetime.now() - last_glory).seconds > 120:
+        last_glory = dt.datetime.now()
+        await message.channel.send("Glory!")
 
     if message.content.lower().startswith('-') and message.channel.name != 'groovybot-corner': #if the message is a groovy command
         for command in groovycommands.groovycommands:

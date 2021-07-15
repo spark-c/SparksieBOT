@@ -99,6 +99,7 @@ class Listkeeper(commands.Cog):
     ## Read
     @commands.command()
     async def listall(self, ctx) -> None:
+        # TODO Add # of items in each collection
         try:
             tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
             embed: discord.Embed = create_embed(type='all_collections', all_collections=tmp)
