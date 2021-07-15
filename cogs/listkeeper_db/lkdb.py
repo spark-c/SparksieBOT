@@ -22,6 +22,8 @@ try:
         DATABASE_URL = json.load(f)["DB_ADDRESS"]
 except: # when hosted from Heroku / envvars
     DATABASE_URL = os.environ["DB_ADDRESS"]
+print(f"Attempting connection to database at address: {DATABASE_URL}")
+    
 
 
 try:
