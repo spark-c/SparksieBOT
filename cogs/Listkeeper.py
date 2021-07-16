@@ -28,17 +28,11 @@ class Listkeeper(commands.Cog):
         try:
             pargs: Namespace = cmdparser.newlist.parse_args(args)
         except cmdparser.ArgumentError as e:
-            await ctx.channel.send(
-                "Unable to parse arguments!" +
-                e.message + "\n" +
-                e.usage
-            )
+            await self.handle_argument_error(ctx, e)
             return
 
-        name: str = args[0]
-        desc: Union[str, None] = None
-        if len(args) == 2:
-            desc = args[1]
+        name: str = pargs.list_name
+        desc: Union[str, None] = pargs.list_description
 
         try:
             new_colx: Collection = lkdb.create_collection(
@@ -74,40 +68,15 @@ class Listkeeper(commands.Cog):
             except DatabaseError as e:
                 await ctx.channel.send(f"Could not find list! Error:\n{e}")
                 return
-            
 
-        # if args[0].startswith("-"):
-        #     # handle misuse
-        #     if len(args) > 4:
-        #         await ctx.channel.send("Usage: !additem [-l <listname>] <item-name> [<item-note>]")
-        #         return
-
-        #     if args[0].lower() not in ["-l", "-list"]:
-        #         await ctx.channel.send(f"Invalid argument: {args[0]}!")
-        #         return
-            
-        #     if not args[1]:
-        #         await ctx.channel.send("Provide a list name: !additem -l <listname>")
-        #         return
-            
-
-            # clean args
-            # args = args[2:]
-
-        ## Create new item
         if str(ctx.guild.id) not in Listkeeper.selected_list:
             await ctx.channel.send("No list selected! !additem -l <list-name>")
             return
 
-        name: str = pargs.l
-        note: Union[str, None] = pargs.item_description
-        # if len(args) == 2:
-        #     note = args[1]
-
         try:
             new_item: Item = lkdb.create_item(
-                name=name,
-                note=note,
+                name=pargs.item_name,
+                note=pargs.item_description,
                 item_id=lkdb.generate_id(),
                 collection_id=Listkeeper.selected_list[str(ctx.guild.id)].collection_id
             )
@@ -132,27 +101,30 @@ class Listkeeper(commands.Cog):
 
     @commands.command()
     async def list(self, ctx, *args) -> None:
-        if len(args) > 1:
-            await ctx.channel.send("Too many arguments! Use quotes if the list name has spaces.")
+        try:
+            pargs: Namespace = cmdparser.additem.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await self.handle_argument_error(ctx, e)
             return
 
-        if not args and (str(ctx.guild.id) not in Listkeeper.selected_list):
-            await ctx.channel.send("Please supply list name: !list <listname>")
-            return
-
-        if (str(ctx.guild.id) in Listkeeper.selected_list) and (not args):
-            # refreshes the selected_list; (no args were passed but there is a selected list)
-            try:
-                updated_colx: Collection = lkdb.get_collection_by_name(
-                    name=Listkeeper.selected_list[str(ctx.guild.id)].name,
-                    guild_id=str(ctx.guild.id)
-                )
-                Listkeeper.selected_list[str(ctx.guild.id)] = updated_colx
-            except DatabaseError as e:
-                await ctx.channel.send(f"Attempted to refresh list but could not! Error:\n{e}")
+        if pargs.list_name is None:
+            if str(ctx.guild.id) not in Listkeeper.selected_list:
+                await ctx.channel.send("Please supply list name: !list <listname>")
                 return
 
-        if args:
+            elif str(ctx.guild.id) in Listkeeper.selected_list:
+                # refreshes the selected_list; (no args were passed but there is a selected list)
+                try:
+                    updated_colx: Collection = lkdb.get_collection_by_name(
+                        name=Listkeeper.selected_list[str(ctx.guild.id)].name,
+                        guild_id=str(ctx.guild.id)
+                    )
+                    Listkeeper.selected_list[str(ctx.guild.id)] = updated_colx
+                except DatabaseError as e:
+                    await ctx.channel.send(f"Attempted to refresh list but could not! Error:\n{e}")
+                    return
+
+        elif pargs.list_name is not None:
             try:
                 new_colx: Collection = (
                     lkdb.get_collection_by_name(name=args[0], guild_id=str(ctx.guild.id))
@@ -188,56 +160,54 @@ class Listkeeper(commands.Cog):
 
     # Delete
     @commands.command()
-    async def rmlist(self, ctx, collection_name) -> None:
+    async def rmlist(self, ctx, args) -> None:
+        try:
+            pargs: Namespace = cmdparser.rmlist.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await self.handle_argument_error(ctx, e)
+            return
+
         try:
             lkdb.delete_collection_by_name(
-                name=collection_name,
+                name=pargs.list_name,
                 guild_id=str(ctx.guild.id)
             )
-            await ctx.channel.send(f"Deleted list {collection_name}!")
+            await ctx.channel.send(f"Deleted list {pargs.list_name}!")
         except DatabaseError as e:
             await ctx.channel.send(f"Could not remove list! Error:\n{e}")
 
 
     @commands.command()
     async def rmitem(self, ctx, *args) -> None:
-        if not (args[0].startswith("-") or (str(ctx.guild.id) in Listkeeper.selected_list)):
-            await ctx.channel.send("No list selected!")
+        try:
+            pargs: Namespace = cmdparser.rmitem.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await self.handle_argument_error(ctx, e)
             return
 
-        if args[0].startswith("-"):
-            # handle misuse
-            if len(args) > 3:
-                await ctx.channel.send("Usage: !rmitem [-l <listname>] <item-name>")
-                return
-
-            if args[0].lower() not in ["-l", "-list"]:
-                await ctx.channel.send(f"Invalid argument: {args[0]}!")
+        if pargs.l is None:
+            if str(ctx.guild.id) not in Listkeeper.selected_list:
+                await ctx.channel.send("No list selected!")
                 return
             
-            if not args[1]:
-                await ctx.channel.send("Provide a list name: !additem [-l <listname>] <item-name>")
-                return
-
+        if pargs.l is not None:
             try:
                 Listkeeper.selected_list[str(ctx.guild.id)] = (
                     lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
                 )
             except DatabaseError as e:
                 await ctx.channel.send(f"Couldn't find that list! Error:\n{e}")
-            
-            # clean args
-            args = args[2:]
 
         if str(ctx.guild.id) not in Listkeeper.selected_list: # for typechecker
             return
+
         try:
             lkdb.delete_item(
                 collection_name=Listkeeper.selected_list[str(ctx.guild.id)].name,
                 guild_id=str(ctx.guild.id),
-                item_name=args[0]
+                item_name=pargs.item_name
             )
-            await ctx.channel.send(f"Deleted item '{args[0]}'!")
+            await ctx.channel.send(f"Deleted item '{pargs.item_name}'!")
         except DatabaseError as e:
             await ctx.channel.send(f"Couldn't delete that item! Error:\n{e}")
 
@@ -253,6 +223,7 @@ class Listkeeper(commands.Cog):
         ctx, 
         error: cmdparser.ArgumentError
         ) -> None:
+        
         # TODO fix the formatting of this message
         await ctx.channel.send(
                 "Unable to parse arguments!" +
