@@ -102,7 +102,7 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def list(self, ctx, *args) -> None:
         try:
-            pargs: Namespace = cmdparser.additem.parse_args(args)
+            pargs: Namespace = cmdparser.list.parse_args(args)
         except cmdparser.ArgumentError as e:
             await self.handle_argument_error(ctx, e)
             return
@@ -223,7 +223,7 @@ class Listkeeper(commands.Cog):
         ctx, 
         error: cmdparser.ArgumentError
         ) -> None:
-        
+
         # TODO fix the formatting of this message
         await ctx.channel.send(
                 "Unable to parse arguments!" +
