@@ -57,7 +57,8 @@ additem.add_argument(
 )
 
 list: LoudArgumentParser = LoudArgumentParser(description="Displays the given (or most recently used) list.")
-list.add_argument("list_name",
+list.add_argument(
+    "list_name",
     nargs="?",
     metavar="<list-name>", 
     help="Name of the list you'd like to display"
