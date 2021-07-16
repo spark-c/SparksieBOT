@@ -160,7 +160,7 @@ class Listkeeper(commands.Cog):
 
     # Delete
     @commands.command()
-    async def rmlist(self, ctx, args) -> None:
+    async def rmlist(self, ctx, *args) -> None:
         try:
             pargs: Namespace = cmdparser.rmlist.parse_args(args)
         except cmdparser.ArgumentError as e:
