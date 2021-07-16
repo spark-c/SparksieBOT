@@ -1,13 +1,12 @@
 # baby-bot
-baby's first discord bot
 
-This is a discord bot made initially as a learning project; it is a part of the discord server I've set up with friends of mine, and I add various functionalities as needed.
+A Discord bot that provides upkeep, utility, and some fun commands for my personal discord server!
 
 Commands:
 
 ....(Funtions cog)
 
-!cat - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat.
+!cat [-f] - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat. Use the optional argument "-f" to return the first (read: most relevant) search result for your query.
 
 !marco - pings you with 'Polo!' from a different text channel.
 
