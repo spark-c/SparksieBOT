@@ -42,7 +42,8 @@ class Listkeeper(commands.Cog):
                 guild_id=str(ctx.guild.id)
             )
             Listkeeper.selected_list[str(ctx.guild.id)] = new_colx
-            await ctx.channel.send(f"Successfully created {new_colx.name}!")
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+            # await ctx.channel.send(f"Successfully created {new_colx.name}!")
 
         except DatabaseError as e:
             await ctx.channel.send(f"Could not create list! Error:\n{e}")
@@ -80,7 +81,8 @@ class Listkeeper(commands.Cog):
                 item_id=lkdb.generate_id(),
                 collection_id=Listkeeper.selected_list[str(ctx.guild.id)].collection_id
             )
-            await ctx.channel.send(f"Successfully created item {new_item.name}")
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+            # await ctx.channel.send(f"Successfully created item {new_item.name}")
         except DatabaseError as e:
             await ctx.channel.send(f"Could not create item! Error:\n{e}")
             return
@@ -93,6 +95,7 @@ class Listkeeper(commands.Cog):
         try:
             tmp: List[Collection] = lkdb.get_guild_collections(str(ctx.guild.id))
             embed: discord.Embed = create_embed(type='all_collections', all_collections=tmp)
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
             await ctx.channel.send(embed=embed)
         except DatabaseError as e:
             await ctx.channel.send(f"Nothing found! Error:\n{e}")
@@ -140,6 +143,7 @@ class Listkeeper(commands.Cog):
                 type='collection', 
                 collection=Listkeeper.selected_list[str(ctx.guild.id)]
                 )
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
             await ctx.channel.send(embed=embed)
             return
         else:
@@ -172,7 +176,8 @@ class Listkeeper(commands.Cog):
                 name=pargs.list_name,
                 guild_id=str(ctx.guild.id)
             )
-            await ctx.channel.send(f"Deleted list {pargs.list_name}!")
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+            # await ctx.channel.send(f"Deleted list {pargs.list_name}!")
         except DatabaseError as e:
             await ctx.channel.send(f"Could not remove list! Error:\n{e}")
 
@@ -207,7 +212,8 @@ class Listkeeper(commands.Cog):
                 guild_id=str(ctx.guild.id),
                 item_name=pargs.item_name
             )
-            await ctx.channel.send(f"Deleted item '{pargs.item_name}'!")
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+            # await ctx.channel.send(f"Deleted item '{pargs.item_name}'!")
         except DatabaseError as e:
             await ctx.channel.send(f"Couldn't delete that item! Error:\n{e}")
 
