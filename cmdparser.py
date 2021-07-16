@@ -23,6 +23,20 @@ class LoudArgumentParser(argparse.ArgumentParser):
 
 
 ## Listkeeper parsers
+newlist: LoudArgumentParser = LoudArgumentParser(description="Creates a new list.")
+newlist.add_argument(
+    "list_name",
+    metavar="<list-name>",
+    help="Name of the list you'd like to create"
+)
+newlist.add_argument(
+    "list_description",
+    metavar="<list-description>",
+    help="An optional note to attach to the list",
+    nargs="?",
+    default=None
+)
+
 additem: LoudArgumentParser = LoudArgumentParser(description="Adds an item to a list.")
 additem.add_argument(
     "-l", "-list", 
