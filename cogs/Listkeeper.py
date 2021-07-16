@@ -7,9 +7,11 @@ import discord
 from discord.ext import commands
 import asyncio
 from typing import Union, Dict, List, Optional
+from argparse import Namespace # for type annots
 
 from cogs.listkeeper_db.lkdb import Collection, Item
 import cogs.listkeeper_db.lkdb as lkdb
+import cmdparser
 
 
 class Listkeeper(commands.Cog):
@@ -23,6 +25,16 @@ class Listkeeper(commands.Cog):
     ## Create
     @commands.command()
     async def newlist(self, ctx, *args) -> None:
+        try:
+            pargs: Namespace = cmdparser.newlist.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await ctx.channel.send(
+                "Unable to parse arguments!" +
+                e.message + "\n" +
+                e.usage
+            )
+            return
+
         name: str = args[0]
         desc: Union[str, None] = None
         if len(args) == 2:
@@ -45,43 +57,52 @@ class Listkeeper(commands.Cog):
 
     @commands.command()
     async def additem(self, ctx, *args) -> None:
-        ## Check if list name is passed
-        if args[0].startswith("-"):
-            # handle misuse
-            if len(args) > 4:
-                await ctx.channel.send("Usage: !additem [-l <listname>] <item-name> [<item-note>]")
-                return
+        try:
+            pargs: Namespace = cmdparser.additem.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await self.handle_argument_error(ctx, e)
+            return
 
-            if args[0].lower() not in ["-l", "-list"]:
-                await ctx.channel.send(f"Invalid argument: {args[0]}!")
-                return
-            
-            if not args[1]:
-                await ctx.channel.send("Provide a list name: !additem -l <listname>")
-                return
-            
+        ## Check if list name is passed
+        if pargs.l is not None:
             # query for a list matching given name
             try:
                 found: Union[Collection, None] = (
-                    lkdb.get_collection_by_name(name=args[1], guild_id=str(ctx.guild.id))
+                    lkdb.get_collection_by_name(name=pargs.l, guild_id=str(ctx.guild.id))
                 )
                 Listkeeper.selected_list[str(ctx.guild.id)] = found
             except DatabaseError as e:
                 await ctx.channel.send(f"Could not find list! Error:\n{e}")
                 return
+            
+
+        # if args[0].startswith("-"):
+        #     # handle misuse
+        #     if len(args) > 4:
+        #         await ctx.channel.send("Usage: !additem [-l <listname>] <item-name> [<item-note>]")
+        #         return
+
+        #     if args[0].lower() not in ["-l", "-list"]:
+        #         await ctx.channel.send(f"Invalid argument: {args[0]}!")
+        #         return
+            
+        #     if not args[1]:
+        #         await ctx.channel.send("Provide a list name: !additem -l <listname>")
+        #         return
+            
 
             # clean args
-            args = args[2:]
+            # args = args[2:]
 
         ## Create new item
         if str(ctx.guild.id) not in Listkeeper.selected_list:
             await ctx.channel.send("No list selected! !additem -l <list-name>")
             return
 
-        name: str = args[0]
-        note: Union[str, None] = None
-        if len(args) == 2:
-            note = args[1]
+        name: str = pargs.l
+        note: Union[str, None] = pargs.item_description
+        # if len(args) == 2:
+        #     note = args[1]
 
         try:
             new_item: Item = lkdb.create_item(
@@ -156,12 +177,12 @@ class Listkeeper(commands.Cog):
 
     ## Update
     @commands.command()
-    async def updateitem(self, ctx) -> None:
+    async def updatelist(self, ctx, *args) -> None:
         pass
 
 
     @commands.command()
-    async def updatelist(self, ctx) -> None:
+    async def updateitem(self, ctx, *args) -> None:
         pass
 
 
@@ -225,6 +246,20 @@ class Listkeeper(commands.Cog):
     @commands.command()
     async def listundo(self, ctx) -> None:
         pass
+
+
+    async def handle_argument_error(
+        self, 
+        ctx, 
+        error: cmdparser.ArgumentError
+        ) -> None:
+        # TODO fix the formatting of this message
+        await ctx.channel.send(
+                "Unable to parse arguments!" +
+                error.message + "\n" +
+                error.usage
+            )
+        return
 
 
 # ## Helper Functions
