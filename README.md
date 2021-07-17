@@ -4,46 +4,77 @@ A Discord bot that provides upkeep, utility, and some fun commands for my person
 
 Commands:
 
-....(Funtions cog)
+### (Funtions cog)
+---
+!cat: Returns a random cat picture. You can type something after '!cat' to search for that query instead of cat. Optional argument "-f" to return the first (read: most relevant) search result for your query.\
+Usage: `!cat [-f] [<alternate-query>]`\
+`!cat -f dog`
 
-!cat [-f] - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat. Use the optional argument "-f" to return the first (read: most relevant) search result for your query.
+!marco: Pings you with 'Polo!' from a different text channel.\
+Usage: `!marco`\
+`!marco`\
 
-!marco - pings you with 'Polo!' from a different text channel.
+!ping - Pong!\
+Usage: `!ping`\
+`!ping`\
 
-!ping - Pong!
+!roll: "Rolls" some number of dice, of some given size.\
+Usage: `!roll <num-dice>d<die-size>`\
+`!roll 4d6`\
 
-!roll - usage: !roll 4d6
+!say: Makes the bot say whatever you type after !say\
+Usage: `!say <statement>`\
+`!say hello, world`\
 
-!say - makes the bot say whatever you type after !say
+!sleepy: Turns bot off (confirm with a reply of 'y').\
+Usage `!sleepy`\
+`!sleepy`\
 
-!sleepy - turns bot off (confirm with a reply of 'y')
+!teampicker: Returns numbers in the format [ 1, 2 ] vs [ 3, 4, 5 ] in random order to assign teams. Plans to optionally use names from an occupied voice channel instead.\
+Usage: `!teampicker <team1size> <team2size>`\
+`!teampicker 2 3`\
 
-!teampicker - usage: !teampicker (team1size) (team2size) // returns numbers in the format [ 1, 2 ] vs [ 3, 4, 5 ] in random order to assign teams. Plans to optionally use names from an occupied voice channel instead.
+!help: Displays help message for all commands, or the specified command.\
+Usage: `!help [<command-name>]`\
+`!help` or `!help teampicker`\
 
-!help - lists available commands
+TODO: Update code and documentation for `!help_printout` (shows this message)
 
-!help (command) - shows usage of given command
+### (Listkeeper cog)
+---
+!newlist: Creates a new list.\
+Usage: `!newlist <list-name> [<list-description>]`\
+`!newlist "My First List" "This is the first list that I have made."`
 
-!help_printout - shows this message.''')
 
-....(Minecraft cog)
+!additem: Adds an item to the selected list.\
+Usage: `!additem [-l <list-name>] <item-name> [<item-note>]`\
+`!additem -l "My First List" Item1 "The first item of the list"`\
 
-!playercount - returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well (!playercount names).
 
-....(Tabletop cog)
+!list: Prints out the entire selected list and its items.\
+Usage: `!list [<list-name>]`\
+`!list "My First List"`\
 
-!gamelist: returns the list of boardgames we've assembled.
-You can optionally type players-low or players-high (!gamelist players-low) to sort the list by the required number of players.
 
-  When you specify number of players, use a low number that is reasonable for having fun playing the game. So like, you can technically play Monopoly with 2 players, but why would you do that? I'd say 3 for that one.
+!listall: Shows all lists created on this server.\
+`Usage: !listall`\
+`!listall`\
 
-  If no #players is specified, it will default to 3.
 
-!add_game: adds a game to the list. Usage: !add_game (name) (# players) (optional note).
-Keep in mind that any item that has a space in it will NEED to be wrapped in quotes. E.g. Secret Hitler will not work; must be "Secret Hitler". Also applies to the optional note.
+!rmlist: Removes / Deletes a list.\
+Usage: `!rmlist <list-name>` (list-name REQUIRED!)\
+`!rmlist "My First List"`\
 
-!delete_game: type the game's name after this command to remove it from the list.
 
-Currently there is no way to view the notes, or edit the game's info; that stuff is still being worked on.
+!rmitem: Removes / Deletes an item from a list.\
+Usage: `!rmitem [-l <list-name>] <item-name>`\
+`!rmitem -l "My First List" Item1`\
+
+### (Minecraft cog)
+---
+!playercount: Returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well.\
+Usage: `!playercount ["names"]`\
+`!playercount names`
 
 TBD: Finish ist of commands and functionality.
