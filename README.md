@@ -12,31 +12,31 @@ Usage: `!cat [-f] [<alternate-query>]`\
 
 !marco: Pings you with 'Polo!' from a different text channel.\
 Usage: `!marco`\
-`!marco`\
+`!marco`
 
 !ping - Pong!\
 Usage: `!ping`\
-`!ping`\
+`!ping`
 
 !roll: "Rolls" some number of dice, of some given size.\
 Usage: `!roll <num-dice>d<die-size>`\
-`!roll 4d6`\
+`!roll 4d6`
 
 !say: Makes the bot say whatever you type after !say\
 Usage: `!say <statement>`\
-`!say hello, world`\
+`!say hello, world`
 
 !sleepy: Turns bot off (confirm with a reply of 'y').\
 Usage `!sleepy`\
-`!sleepy`\
+`!sleepy`
 
 !teampicker: Returns numbers in the format [ 1, 2 ] vs [ 3, 4, 5 ] in random order to assign teams. Plans to optionally use names from an occupied voice channel instead.\
 Usage: `!teampicker <team1size> <team2size>`\
-`!teampicker 2 3`\
+`!teampicker 2 3`
 
 !help: Displays help message for all commands, or the specified command.\
 Usage: `!help [<command-name>]`\
-`!help` or `!help teampicker`\
+`!help` or `!help teampicker`
 
 TODO: Update code and documentation for `!help_printout` (shows this message)
 
@@ -49,27 +49,27 @@ Usage: `!newlist <list-name> [<list-description>]`\
 
 !additem: Adds an item to the selected list.\
 Usage: `!additem [-l <list-name>] <item-name> [<item-note>]`\
-`!additem -l "My First List" Item1 "The first item of the list"`\
+`!additem -l "My First List" Item1 "The first item of the list"`
 
 
 !list: Prints out the entire selected list and its items.\
 Usage: `!list [<list-name>]`\
-`!list "My First List"`\
+`!list "My First List"`
 
 
 !listall: Shows all lists created on this server.\
 `Usage: !listall`\
-`!listall`\
+`!listall`
 
 
 !rmlist: Removes / Deletes a list.\
 Usage: `!rmlist <list-name>` (list-name REQUIRED!)\
-`!rmlist "My First List"`\
+`!rmlist "My First List"`
 
 
 !rmitem: Removes / Deletes an item from a list.\
 Usage: `!rmitem [-l <list-name>] <item-name>`\
-`!rmitem -l "My First List" Item1`\
+`!rmitem -l "My First List" Item1`
 
 ### (Minecraft cog)
 ---
