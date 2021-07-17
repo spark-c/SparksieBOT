@@ -14,7 +14,14 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-bot = commands.Bot(command_prefix='!')
+# Tiny subclass to add a property used for "pausing" the bot
+class SparksieBot(commands.Bot):
+    def __init__(self, command_prefix = '!', description=None):
+        super().__init__(command_prefix, description)
+        self.paused_guilds = set()
+
+
+bot = SparksieBot(command_prefix='!')
 
 last_glory = dt.datetime.now() - dt.timedelta(seconds=120)
 
@@ -39,7 +46,8 @@ async def on_message(message):
                 await message.delete()
                 await message.channel.send('No littering. Keep the trash in the correct channel.')
                 targetChannel = discord.utils.get(message.guild.text_channels, name='groovybot-corner')
-                await targetChannel.send('{0} Where it belongs.'.format(message.author.mention))
+                if targetChannel is not None:
+                    await targetChannel.send('{0} Where it belongs.'.format(message.author.mention))
 
     if str(message.author) == 'Groovy#7254' and message.channel.name != 'groovybot-corner': #Checks if the message was sent by Groovy / in the wrong channel
         await message.delete()
@@ -57,9 +65,27 @@ async def on_message(message):
             await message.channel.send('USAF is still watching.')
 
     try:
-        await bot.process_commands(message) #this is required or the bot will be stuck in the on_message and not see the commands
+        if message.content.startswith("!unpause"):
+            await bot.process_commands(message)
+        elif str(message.guild.id) not in bot.paused_guilds:
+            await bot.process_commands(message) #this is required or the bot will be stuck in the on_message and not see the commands
     except:
         return
+
+@bot.command()
+async def pause(ctx):
+    bot.paused_guilds.add(str(ctx.guild.id))
+    await ctx.channel.send("Paused!")
+
+
+@bot.command()
+async def unpause(ctx):
+    try:
+        bot.paused_guilds.remove(str(ctx.guild.id))
+        await ctx.channel.send("Unpaused!")
+    except KeyError:
+        await ctx.channel.send("Can't unpause; nothing was paused!")
+
 
 @bot.command()
 async def load(ctx, extension):
