@@ -69,8 +69,11 @@ async def on_message(message):
             await bot.process_commands(message)
         elif str(message.guild.id) not in bot.paused_guilds:
             await bot.process_commands(message) #this is required or the bot will be stuck in the on_message and not see the commands
+        else:
+            await message.add_reaction("⏸️") # a pause symbol
     except:
         return
+
 
 @bot.command()
 async def pause(ctx):
@@ -91,14 +94,17 @@ async def unpause(ctx):
 async def load(ctx, extension):
     await my_load(ctx, extension, bot)
 
+
 @bot.command()
 async def unload(ctx, extension):
     await my_unload(ctx, extension, bot)
+
 
 @bot.command()
 async def reload(ctx, extension):
     await my_unload(ctx, extension, bot)
     await my_load(ctx, extension, bot)
+
 
 async def my_load(ctx, extension, bot):
     try:
@@ -106,6 +112,7 @@ async def my_load(ctx, extension, bot):
         await ctx.channel.send('Extension \'{0}\' loaded!'.format(extension))
     except:
         await ctx.channel.send('Load \'{0}\' failed!'.format(extension))
+
 
 async def my_unload(ctx, extension, bot):
     try:
