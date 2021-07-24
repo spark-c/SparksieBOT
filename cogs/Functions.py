@@ -6,47 +6,58 @@ import discord
 from discord.ext import commands
 import random
 import requests
+from requests.models import Response
 import bs4
+from bs4.element import ResultSet
 import asyncio
+from typing import List, Tuple
+
+
+from baby_bot import SparksieBot
 
 
 class Functions(commands.Cog):
 
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: SparksieBot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, ctx):
+    async def on_message(self, ctx) -> None:
         if ctx.content.lower().startswith('good bot'): # Thanks for 'good bot'
             await ctx.channel.send('Thanks!')
         if self.bot.user in ctx.mentions: # Responds to Mentions
-            print(ctx.content)
-            if ctx.content.lower().startswith('he') or ctx.content.lower().startswith('hi'): # hey, hello, hi
+            if (ctx.content.lower().startswith('he') or
+                ctx.content.lower().startswith('hi')): # hey, hello, hi
                 await ctx.channel.send('Hello {0}!'.format(ctx.author))
             else:
                 await ctx.channel.send('Beep boop!')
 
 
     @commands.command()
-    async def ping(self, ctx):
+    async def ping(self, ctx) -> None:
         await ctx.channel.send('Pong!')
 
     @commands.command()
-    async def marco(self, ctx): # Replies "Polo!" with a mention of the invoker in a different text channel, if available
-        allChannels = []
+    async def marco(self, ctx) -> None: # Replies "Polo!" with a mention of the invoker in a different text channel, if available
+        allChannels: List = []
         for channel in ctx.guild.channels:
             if channel.type == discord.ChannelType.text:
                 allChannels.append(channel)
         allChannels.remove(ctx.channel)
         if len(allChannels) > 0:
-            await allChannels[random.randint(0, len(allChannels) - 1)].send('Polo! {0}'.format(ctx.author.mention)) # make it join a random DIFFERENT channel to say this
+            await allChannels[
+                    random.randint(0, len(allChannels) - 1)
+                ].send(
+                    f"Polo! {ctx.author.mention}"
+                ) # make it join a random DIFFERENT channel to say this
         else:
             await ctx.channel.send('Polo!')
 
     @commands.command()
-    async def cat(self, ctx, *terms): # searches for a random cat picture, or can search optional arguments instead
-        catQueries = ['cat', 'cats', 'happy kitty', 'kitten', 'happy cat', 'cute cat', 'cat in box', 'sleepy cat', 'house cat']
-        if terms:
+    async def cat(self, ctx, *terms) -> None: # searches for a random cat picture, or can search optional arguments instead
+        # TODO: refactor the 'query' bit of this function to allow for typing
+        catQueries: List[str] = ['cat', 'cats', 'happy kitty', 'kitten', 'happy cat', 'cute cat', 'cat in box', 'sleepy cat', 'house cat']
+        if terms is not None:
             query = terms
         else:
             query = catQueries[random.randint(0, len(catQueries)-1)]
@@ -58,20 +69,29 @@ class Functions(commands.Cog):
             final_query = query
             index = random.randint(1,20) # higher ranges risk out-of-index errors
 
-        results = requests.get(r'https://google.com/search?q={0}&safe=on&tbm=isch'.format('+'.join(final_query)))
+        results: Response = requests.get(
+            r'https://google.com/search?q={0}&safe=on&tbm=isch'.format(
+                '+'.join(final_query)
+            )
+        )
         try:
             results.raise_for_status()
         except:
+            # TODO: add error handling
             print('ERROR downloading search results')
             await ctx.channel.send('Search Failed! :(')
             return
-        parsed = bs4.BeautifulSoup(results.text, 'html.parser')
-        images = parsed.select('img')
-        imgLink = images[index].attrs['src']
+        parsed: bs4.BeautifulSoup = (
+            bs4.BeautifulSoup(results.text, 'html.parser')
+        )
+        # TODO: figure out the red squiggly .attrs
+        images: ResultSet = parsed.select('img')
+        imgLink: str = images[index].attrs['src']
         await ctx.channel.send(imgLink)
 
     @commands.command()
-    async def roll(self, ctx, dice:str): #generate a random number between min and max, optionally several times.
+    async def roll(self, ctx, dice:str) -> None: #generate a random number between min and max, optionally several times.
+        # TODO: fix arg to be properly captured in its own var
         try:
             dice = dice.split('d') # 4d6 = [4, 6]
             for i in range(0, len(dice)):
@@ -80,9 +100,11 @@ class Functions(commands.Cog):
         except:
             await ctx.channel.send('Usage: !roll 4d6')
 
+        # TODO: continue type-checking below here
+
         ints = []
         temp = []
-        for i in range(0, iters): #generate the numbers
+        for i in range(0, int(iters)): #generate the numbers
             ints.append(random.randint(1, dice[1])) # number between 1 and size of die (includes endpoint)
         for i in range(0, len(ints)): #turn them into str for printing
             temp.append(str(ints[i]))
@@ -90,7 +112,7 @@ class Functions(commands.Cog):
         await ctx.channel.send(result)
 
     @commands.command()
-    async def teampicker(self, ctx, sharks:int, jets:int): #team1size vs team2size
+    async def teampicker(self, ctx, sharks:int, jets:int) -> None: #team1size vs team2size
         lineup = []
         for i in range(0, sharks + jets): #creates list to pick from
             lineup.append(i + 1) # +1 so that we get regular counting numbers
@@ -102,7 +124,7 @@ class Functions(commands.Cog):
         await ctx.channel.send('noobs')
 
     @commands.command()
-    async def say(self, ctx, *args:str):
+    async def say(self, ctx, *args:str) -> None:
         if str(ctx.message.author) == 'spark.c#7001':
             await ctx.message.delete()
             await ctx.channel.send(' '.join(args))
@@ -110,7 +132,7 @@ class Functions(commands.Cog):
             await ctx.channel.send('Nice try. I\'m not your mouthpiece anymore!')
 
     @commands.command()
-    async def sleepy(self, ctx):
+    async def sleepy(self, ctx) -> None:
         await ctx.channel.send('Is it my bedtime? (y/n)')
 
         try:
@@ -125,7 +147,7 @@ class Functions(commands.Cog):
             await ctx.channel.send("I'm not tired yet!")
 
     @commands.command()
-    async def lotr(self, ctx): #grabs a random quote from source site
+    async def lotr(self, ctx) -> None: #grabs a random quote from source site
         queryIndex = random.randint(1, 64) #there are 64 quotes on the site
         queryURL = 'http://lotrproject.com/quotes/quote/{}'.format(str(queryIndex))
 
@@ -154,7 +176,7 @@ class Functions(commands.Cog):
 
 
     @commands.command()
-    async def help_printout(self, ctx):
+    async def help_printout(self, ctx) -> None:
 	    await ctx.channel.send(r'''
 .
 !cat - returns a random cat picture! you can type something after '!cat' to search for that query instead of cat.
