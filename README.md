@@ -1,4 +1,4 @@
-# baby-bot
+# SparksieBOT
 
 A Discord bot that provides upkeep, utility, and some fun commands for my personal discord server!
 
