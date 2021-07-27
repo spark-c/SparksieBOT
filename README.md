@@ -4,7 +4,7 @@ A Discord bot that provides upkeep, utility, and some fun commands for my person
 
 Commands:
 
-### (Funtions cog)
+### (Functions cog)
 ---
 !cat: Returns a random cat picture. You can type something after '!cat' to search for that query instead of cat. Optional argument "-f" to return the first (read: most relevant) search result for your query.\
 Usage: `!cat [-f] [<alternate-query>]`\
