@@ -31,6 +31,15 @@ class SparksieBot(commands.Bot):
         super().__init__(command_prefix, description)
         self.paused_guilds = set()
 
+    async def process_commands(self, message):
+        """ overriding this to allow receiving commands from WidgetBot """
+        if message.author.bot:
+            if message.author.id != 871218166540427324: # WidgetBot id
+                return
+
+        ctx = await self.get_context(message)
+        await self.invoke(ctx)
+
 
 bot: SparksieBot = SparksieBot(command_prefix='!')
 

@@ -57,7 +57,7 @@ class Functions(commands.Cog):
     async def cat(self, ctx, *terms) -> None: # searches for a random cat picture, or can search optional arguments instead
         # TODO: refactor the 'query' bit of this function to allow for typing
         catQueries: List[str] = ['cat', 'cats', 'happy kitty', 'kitten', 'happy cat', 'cute cat', 'cat in box', 'sleepy cat', 'house cat']
-        if terms is not None:
+        if terms:
             query = terms
         else:
             query = catQueries[random.randint(0, len(catQueries)-1)]
