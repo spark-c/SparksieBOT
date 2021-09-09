@@ -27,8 +27,8 @@ logger.addHandler(handler)
 
 # Tiny subclass to add a property used for "pausing" the bot
 class SparksieBot(commands.Bot):
-    def __init__(self, command_prefix = '!', description=None):
-        super().__init__(command_prefix, description)
+    def __init__(self, command_prefix = '!'):
+        super().__init__(command_prefix)
         self.paused_guilds = set()
 
     async def process_commands(self, message):
