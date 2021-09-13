@@ -27,8 +27,17 @@ logger.addHandler(handler)
 
 # Tiny subclass to add a property used for "pausing" the bot
 class SparksieBot(commands.Bot):
-    def __init__(self, command_prefix = '!'):
-        super().__init__(command_prefix)
+    def __init__(
+        self,
+        command_prefix='!',
+        intents=discord.Intents.default(),
+        loop=None
+        ):
+        super().__init__(
+            command_prefix=command_prefix,
+            intents=intents,
+            loop=loop
+        )
         self.paused_guilds = set()
 
     async def process_commands(self, message):
@@ -40,8 +49,11 @@ class SparksieBot(commands.Bot):
         ctx = await self.get_context(message)
         await self.invoke(ctx)
 
-
-bot: SparksieBot = SparksieBot(command_prefix='!')
+intents = discord.Intents.default()
+intents.members = True
+intents.typing = False
+intents.presences = False
+bot: SparksieBot = SparksieBot(command_prefix='!', intents=intents)
 
 last_glory: dt.datetime = dt.datetime.now() - dt.timedelta(seconds=120)
 
