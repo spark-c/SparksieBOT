@@ -1,7 +1,9 @@
 import utils.logger
 import os
-from bot import bot
+import bot as sb
 
+bot = sb.bot
+sb.initialize_bot(bot)
 
 try:
     # When running locally

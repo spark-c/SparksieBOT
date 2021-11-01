@@ -5,15 +5,15 @@ import discord.ext.test as dpytest
 import os
 from setuptools import glob
 
-import baby_bot
+import bot as sb
 
 
 @pytest.fixture
 def bot(event_loop):
-    bot = baby_bot.SparksieBot(
-        command_prefix="!", intents=baby_bot.intents, loop=event_loop
+    bot = sb.SparksieBot(
+        command_prefix="!", intents=sb.intents, loop=event_loop
     )
-    baby_bot.initialize_bot(bot)
+    sb.initialize_bot(bot)
     dpytest.configure(bot)
     return bot
 
