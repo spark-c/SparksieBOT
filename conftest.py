@@ -2,13 +2,21 @@
 
 import pytest
 import discord.ext.test as dpytest
+import asyncio
 import os
 from setuptools import glob
 
 import bot as sb
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
 def bot(event_loop):
     bot = sb.SparksieBot(
         command_prefix="!", intents=sb.intents, loop=event_loop
