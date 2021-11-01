@@ -13,7 +13,7 @@ import asyncio
 from typing import List, Tuple
 
 
-from baby_bot import SparksieBot
+from bot import SparksieBot
 
 
 class Functions(commands.Cog):
