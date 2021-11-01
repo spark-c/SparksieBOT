@@ -11,7 +11,7 @@ from argparse import Namespace # for type annots
 
 from cogs.listkeeper_db.lkdb import Collection, Item
 import cogs.listkeeper_db.lkdb as lkdb
-import cmdparser
+import utils.cmdparser as cmdparser
 
 
 class Listkeeper(commands.Cog):
