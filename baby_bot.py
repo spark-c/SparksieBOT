@@ -9,7 +9,7 @@ from typing import Union
 
 from discord.ext.commands.bot import Bot
 
-import groovycommands
+import utils.groovycommands as groovycommands
 
 logger: logging.Logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
