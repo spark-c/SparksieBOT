@@ -1,1 +1,1 @@
-worker: python baby-bot.py
+worker: python run.py
