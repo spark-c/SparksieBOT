@@ -2,7 +2,7 @@ import discord
 import random
 import os
 import datetime as dt
-from typing import Union
+from typing import Union, Optional, List
 from discord.ext.commands.bot import Bot
 
 import utils.groovycommands as groovycommands
@@ -43,7 +43,7 @@ intents.presences = False
 bot: SparksieBot = SparksieBot(command_prefix='!', intents=intents)
 
 
-def initialize_bot(bot:SparksieBot):
+def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
 
     # --------------------
     # EVENTS
@@ -191,14 +191,21 @@ def initialize_bot(bot:SparksieBot):
     # --------------------
     # LOAD COGS
     # --------------------
-
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
+    if load_cogs is None:
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                try:
+                    loadThis: str = filename[:-3]
+                    bot.load_extension(f"cogs.{loadThis}")
+                    print(f"cog {filename} loaded.")
+                except Exception as e:
+                    print(f"cog {filename} failed!")
+                    print(e)
+    else:
+        for cog in load_cogs:
             try:
-                loadThis: str = filename[:-3]
-                bot.load_extension('cogs.{0}'.format(loadThis))
-                print('cog ' + filename + ' loaded.')
+                bot.load_extension(f"cogs.{cog}")
+                print(f"cog {cog} loaded.")
             except Exception as e:
-                print('cog ' + filename + ' failed!')
+                print(f"cog {cog} failed!")
                 print(e)
-
