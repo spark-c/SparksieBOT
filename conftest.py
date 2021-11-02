@@ -21,7 +21,7 @@ def bot(event_loop):
     bot = sb.SparksieBot(
         command_prefix="!", intents=sb.intents, loop=event_loop
     )
-    sb.initialize_bot(bot)
+    sb.initialize_bot(bot, load_cogs=[])
     dpytest.configure(bot)
     return bot
 
