@@ -23,7 +23,7 @@ class SparksieBot(Bot):
         )
         self.paused_guilds = set()
         self.last_glory: dt.datetime = (
-            dt.datetime.now() - dt.timedelta(seconds=120)
+            dt.datetime.now() - dt.timedelta(seconds=121)
         )
 
     async def process_commands(self, message):
