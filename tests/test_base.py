@@ -1,4 +1,3 @@
-import discord
 import pytest
 import discord.ext.test as dpytest
 import random
@@ -26,7 +25,7 @@ class TestOnMessageEvents:
     @pytest.mark.asyncio
     async def test_reply_to_groovy(self, bot):
         await dpytest.message("groovy")
-        assert dpytest.verify().message().contains().content("...")
+        assert dpytest.verify().message().content("...")
 
 
     @pytest.mark.asyncio

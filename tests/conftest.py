@@ -26,6 +26,13 @@ def bot(event_loop):
     return bot
 
 
+async def print_message_history(limit:int=2):
+    channel = dpytest.get_config().channels[0] # type: ignore
+    history = await channel.history(limit=limit).flatten() # type: ignore
+    contents = [msg.content for msg in history]
+    print(contents)
+
+
 # Cleans up leftover files generated through dpytest
 def pytest_sessionfinish():
     # Clean up attachment files
