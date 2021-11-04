@@ -73,3 +73,22 @@ class TestCommands:
         )
     
 
+    @pytest.mark.asyncio
+    async def test_teampicker_(self, cog_bot):
+        pass
+
+
+    @pytest.mark.asyncio
+    async def test_say(self, cog_bot):
+        pass
+
+
+    @pytest.mark.asyncio
+    async def test_sleepy(self, cog_bot):
+        pass
+
+
+    @pytest.mark.asyncio
+    async def test_lotr(self, cog_bot):
+        # TODO: learn to monkeypatch requests.get()env
+        pass
