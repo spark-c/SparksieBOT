@@ -47,6 +47,7 @@ class Functions(commands.Cog):
         if len(allChannels) > 0:
             await allChannels[
                     random.randint(0, len(allChannels) - 1)
+                    # TODO: use random.choice instead
                 ].send(
                     f"Polo! {ctx.author.mention}"
                 ) # make it join a random DIFFERENT channel to say this
