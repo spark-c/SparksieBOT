@@ -37,6 +37,7 @@ class Functions(commands.Cog):
     async def ping(self, ctx) -> None:
         await ctx.channel.send('Pong!')
 
+
     @commands.command()
     async def marco(self, ctx) -> None: # Replies "Polo!" with a mention of the invoker in a different text channel, if available
         allChannels: List = []
@@ -53,6 +54,7 @@ class Functions(commands.Cog):
                 ) # make it join a random DIFFERENT channel to say this
         else:
             await ctx.channel.send('Polo!')
+
 
     @commands.command()
     async def cat(self, ctx, *terms) -> None: # searches for a random cat picture, or can search optional arguments instead
@@ -90,27 +92,37 @@ class Functions(commands.Cog):
         imgLink: str = images[index].attrs['src']
         await ctx.channel.send(imgLink)
 
+
     @commands.command()
-    async def roll(self, ctx, dice:str) -> None: #generate a random number between min and max, optionally several times.
+    async def roll(self, ctx, dice:str, seed=None) -> None: #generate a random number between min and max, optionally several times.
         # TODO: fix arg to be properly captured in its own var
         try:
-            dice = dice.split('d') # 4d6 = [4, 6]
-            for i in range(0, len(dice)):
-                dice[i] = int(dice[i])
-                iters = dice[0]
+            temp_strings: List[str] = dice.split("d") # "4d6" = ["4", "6"]
+            nums: List[int] = list(map(
+                lambda s: int(s), temp_strings
+            ))
+            iters: int = nums[0]
+            die_size: int = nums[1]
         except:
             await ctx.channel.send('Usage: !roll 4d6')
+            return
+
+        rolls: List[int] = list()
+        for _ in range(iters): #generate the numbers
+            if seed:
+                random.seed(int(seed))
+            rolls.append(random.randint(1, die_size))
+
+        results: List[str] = list(map(lambda n: str(n), rolls))
+        message: str = (
+            "Here are your numbers: " +
+            ", ".join(results) + 
+            f"\n Sum: {sum(rolls)}"
+        )
+        await ctx.channel.send(message)
 
         # TODO: continue type-checking below here
 
-        ints = []
-        temp = []
-        for i in range(0, int(iters)): #generate the numbers
-            ints.append(random.randint(1, dice[1])) # number between 1 and size of die (includes endpoint)
-        for i in range(0, len(ints)): #turn them into str for printing
-            temp.append(str(ints[i]))
-        result = 'Here are your numbers: ' + ', '.join(temp) + '\n Sum: {}'.format(sum(ints))
-        await ctx.channel.send(result)
 
     @commands.command()
     async def teampicker(self, ctx, sharks:int, jets:int) -> None: #team1size vs team2size
@@ -124,6 +136,7 @@ class Functions(commands.Cog):
         await asyncio.sleep(3)
         await ctx.channel.send('noobs')
 
+
     @commands.command()
     async def say(self, ctx, *args:str) -> None:
         if str(ctx.message.author) == 'spark.c#7001':
@@ -131,6 +144,7 @@ class Functions(commands.Cog):
             await ctx.channel.send(' '.join(args))
         else:
             await ctx.channel.send('Nice try. I\'m not your mouthpiece anymore!')
+
 
     @commands.command()
     async def sleepy(self, ctx) -> None:
@@ -146,6 +160,7 @@ class Functions(commands.Cog):
             await self.bot.close()
         else:
             await ctx.channel.send("I'm not tired yet!")
+
 
     @commands.command()
     async def lotr(self, ctx) -> None: #grabs a random quote from source site
