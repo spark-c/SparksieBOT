@@ -10,7 +10,8 @@ from requests.models import Response
 import bs4
 from bs4.element import ResultSet
 import asyncio
-from typing import List, Tuple
+from typing import Dict, List, Tuple
+from types import SimpleNamespace
 
 
 from bot import SparksieBot
@@ -164,31 +165,48 @@ class Functions(commands.Cog):
 
     @commands.command()
     async def lotr(self, ctx) -> None: #grabs a random quote from source site
-        queryIndex = random.randint(1, 64) #there are 64 quotes on the site
-        queryURL = 'http://lotrproject.com/quotes/quote/{}'.format(str(queryIndex))
+        attempts: int = 0
+        while attempts < 3:
+            queryIndex: int = random.randint(1, 64) # 64 quotes on the site
+            queryURL: str = f"http://lotrproject.com/quotes/quote/{str(queryIndex)}"
+            headers: Dict[str, str] = {
+                'User-Agent':
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0"
+            } # site rejects plain python requests
+            results: Response = requests.get(queryURL, headers=headers)
 
-        headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0"} # this is necessary bc target site rejects py requests
-
-        results = requests.get(queryURL, headers=headers)
-
-        try:
-            results.raise_for_status()
-        except:
+            try:
+                results.raise_for_status()
+                break
+            except:
+                attempts += 1
+                continue
+        else:
             await ctx.channel.send("I couldn't find a quote!")
             return
 
         try:
-            parsed = bs4.BeautifulSoup(results.text, 'html.parser')
-            quote = parsed.find(class_ = 'text').text
-            character = parsed.find(class_ = 'character').text
-            source = parsed.find(class_ = 'source').text
-
-            quoteEmbed = discord.Embed(name='', description=quote)
-            quoteEmbed.add_field(name=character, value=source)
-
-            await ctx.channel.send(embed=quoteEmbed)
+            parsed: bs4.BeautifulSoup = bs4.BeautifulSoup(
+                results.text, 'html.parser'
+            )
+            quote = parsed.find(class_ = 'text')
+            character = parsed.find(class_ = 'character')
+            source = parsed.find(class_ = 'source')
         except:
             await ctx.channel.send("Something went wrong!")
+            return
+
+        if quote is None:
+                quote = SimpleNamespace(**{"text": "<quote not found>"})
+        if character is None:
+            character = SimpleNamespace(**{"text": "<speaker unknown>"})
+        if source is None:
+            source = SimpleNamespace(**{"text": "<source unknown>"})
+
+        quoteEmbed: discord.Embed = discord.Embed(name='', description=quote.text)
+        quoteEmbed.add_field(name=character.text, value=source.text)
+
+        await ctx.channel.send(embed=quoteEmbed)
 
 
     @commands.command()
