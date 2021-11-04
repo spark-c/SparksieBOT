@@ -7,18 +7,22 @@ from discord import TextChannel, Message
 from utils import groovycommands
 
 
+@pytest.fixture
+def bot_base(bot):
+    bot_no_cogs = bot()
+    return bot_no_cogs
+
+
 class TestOnMessage:
 
     @pytest.mark.asyncio
-    async def test_bot_replies_to_glory(self, bot):
+    async def test_bot_replies_to_glory(self, bot_base):
         await dpytest.message("glory")
         assert dpytest.verify().message().contains().content("Glory!")
 
 
     @pytest.mark.asyncio
-    async def test_glory_has_cooldown(self, bot):
-        # TODO: Why does this test break the following two tests???
-
+    async def test_glory_has_cooldown(self, bot_base):
         await dpytest.message("glory")
         await dpytest.message("glory")
         history = await dpytest.get_config().channels[0].history().flatten() #type: ignore
@@ -26,13 +30,13 @@ class TestOnMessage:
 
 
     @pytest.mark.asyncio
-    async def test_reply_to_groovy(self, bot):
+    async def test_reply_to_groovy(self, bot_base):
         await dpytest.message("groovy")
         assert dpytest.verify().message().content("...")
 
 
     @pytest.mark.asyncio
-    async def test_congratulations(self, bot):
+    async def test_congratulations(self, bot_base):
         prompts = [
             "congratulations!",
             "Congrats!",
@@ -46,7 +50,7 @@ class TestOnMessage:
 
 
     @pytest.mark.asyncio
-    async def test_deletes_music_commands(self, bot):
+    async def test_deletes_music_commands(self, bot_base):
         cmd = groovycommands.groovycommands[0]
         await dpytest.message(cmd)
 
@@ -56,27 +60,26 @@ class TestOnMessage:
 
         assert not cmd in contents
         assert "No littering" in contents[-1]
-
         # TODO: add test for pinging in music channel "where it belongs"
 
 
     class TestPausing:
 
         @pytest.mark.asyncio
-        async def test_pause_commands(self, bot):
+        async def test_pause_commands(self, bot_base):
             pass
 
 
         @pytest.mark.asyncio
-        async def test_pause_events(self, bot):
+        async def test_pause_events(self, bot_base):
             pass
 
         
         @pytest.mark.asyncio
-        async def test_pauses_only_one_guild(self, bot):
+        async def test_pauses_only_one_guild(self, bot_base):
             pass
 
 
         @pytest.mark.asyncio
-        async def test_unpause(self, bot):
+        async def test_unpause(self, bot_base):
             pass

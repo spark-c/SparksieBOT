@@ -18,12 +18,16 @@ import bot as sb
 
 @pytest.fixture()
 async def bot(event_loop):
-    bot = sb.SparksieBot(
-        command_prefix="!", intents=sb.intents, loop=event_loop
-    )
-    sb.initialize_bot(bot, load_cogs=[])
-    dpytest.configure(bot)
-    yield bot
+    
+    def _bot_factory(load_cogs=[]):
+        bot = sb.SparksieBot(
+            command_prefix="!", intents=sb.intents, loop=event_loop
+        )
+        sb.initialize_bot(bot, load_cogs)
+        dpytest.configure(bot)
+        return bot
+
+    yield _bot_factory
 
     await dpytest.empty_queue()
 
