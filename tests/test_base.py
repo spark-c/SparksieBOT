@@ -7,7 +7,7 @@ from discord import TextChannel, Message
 from utils import groovycommands
 
 
-class TestOnMessageEvents:
+class TestOnMessage:
 
     @pytest.mark.asyncio
     async def test_bot_replies_to_glory(self, bot):
