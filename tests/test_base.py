@@ -17,9 +17,12 @@ class TestOnMessage:
 
     @pytest.mark.asyncio
     async def test_glory_has_cooldown(self, bot):
-        """ Should not reply with Glory! here because of cooldown. """
+        # TODO: Why does this test break the following two tests???
+
         await dpytest.message("glory")
-        assert not dpytest.verify().message().contains().content("Glory!")
+        await dpytest.message("glory")
+        history = await dpytest.get_config().channels[0].history().flatten() #type: ignore
+        assert len(history) == 3
 
 
     @pytest.mark.asyncio

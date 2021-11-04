@@ -9,21 +9,23 @@ from setuptools import glob
 import bot as sb
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     loop = asyncio.get_event_loop()
+#     yield loop
+#     loop.close()
 
 
-@pytest.fixture(scope="session")
-def bot(event_loop):
+@pytest.fixture()
+async def bot(event_loop):
     bot = sb.SparksieBot(
         command_prefix="!", intents=sb.intents, loop=event_loop
     )
     sb.initialize_bot(bot, load_cogs=[])
     dpytest.configure(bot)
-    return bot
+    yield bot
+
+    await dpytest.empty_queue()
 
 
 async def print_message_history(limit:int=2):
