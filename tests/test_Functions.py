@@ -90,10 +90,10 @@ class TestCommands:
 
 
     @pytest.mark.asyncio
-    async def test_lotr(self, cog_bot, patched_request, patched_request_success):
+    async def test_lotr(self, cog_bot, patched_request):
         test_embed = Embed(
             name="",
-            description="The world is indeed full of peril, and in it there are many dark places; but still there is much that is fair, and though in all lands love is now mingled with grief, it grows perhaps the greater."
+            description="\"The world is indeed full of peril, and in it there are many dark places; but still there is much that is fair, and though in all lands love is now mingled with grief, it grows perhaps the greater.\""
         )
         test_embed.add_field(
             name="Haldir",
@@ -101,7 +101,4 @@ class TestCommands:
         )
 
         await dpytest.message("!lotr 24601")
-
-        await conftest.print_message_history()
-
         assert dpytest.verify().message().embed(test_embed)

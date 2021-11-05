@@ -5,6 +5,7 @@ import discord.ext.test as dpytest
 import asyncio
 import os
 import requests
+from requests import status_codes
 from setuptools import glob
 
 import bot as sb
@@ -36,30 +37,33 @@ async def bot(event_loop):
 
 @pytest.fixture
 def patched_request(monkeypatch):
+    class MockedResponse:
+        def __init__(self, url, status_code=200, **kwargs):
+            self.status_code = status_code
+            self.url = url
+            self.text = self.json()['text']
+            self.kwargs = kwargs
+        
+        def json(self):
+            return patch_cfg.lookup[self.url]
+
+        def raise_for_status(self):
+            if self.status_code != 200:
+                raise requests.HTTPError(f"Mocked Error: {self.status_code}")
+            return None
+
     def mock_get(url, **kwargs):
-        json = patch_cfg.lookup[url]
-        mock = type("MockedRequest", (), {})()
-        mock.json = json #type: ignore
-        mock.text = mock.json['text'] #type: ignore
-        return mock
+        return MockedResponse(url, **kwargs)
 
     monkeypatch.setattr(requests, "get", mock_get)
 
 
 @pytest.fixture
-def patched_request_success(monkeypatch, patched_request):
-    def mock_status_success():
-        return None
-
-    monkeypatch.setattr(requests.Response, "raise_for_status", mock_status_success)
-
-
-@pytest.fixture
 def patched_request_404(monkeypatch, patched_request):
-    def mock_raise_for_status_404():
-        raise requests.HTTPError("Mock 404 Error")
+    def mock_get_404(url, **kwargs):
+        return MockedResponse(url, status_code=404) #type: ignore
 
-    monkeypatch.setattr(requests.Response, "raise_for_status", mock_raise_for_status_404)
+    monkeypatch.setattr(requests, "get", mock_get_404)
 
 
 async def print_message_history(limit:int=2):
