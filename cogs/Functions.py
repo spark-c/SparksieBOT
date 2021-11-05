@@ -201,7 +201,7 @@ class Functions(commands.Cog):
             return
 
         if quote is None:
-                quote = SimpleNamespace(**{"text": "<quote not found>"})
+            quote = SimpleNamespace(**{"text": "<quote not found>"})
         if character is None:
             character = SimpleNamespace(**{"text": "<speaker unknown>"})
         if source is None:

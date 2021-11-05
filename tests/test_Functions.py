@@ -90,7 +90,7 @@ class TestCommands:
 
 
     @pytest.mark.asyncio
-    async def test_lotr(self, cog_bot, patched_request):
+    async def test_lotr_returns_correct_embed(self, cog_bot, patched_request):
         test_embed = Embed(
             name="",
             description="\"The world is indeed full of peril, and in it there are many dark places; but still there is much that is fair, and though in all lands love is now mingled with grief, it grows perhaps the greater.\""
@@ -102,3 +102,9 @@ class TestCommands:
 
         await dpytest.message("!lotr 24601")
         assert dpytest.verify().message().embed(test_embed)
+
+    
+    @pytest.mark.asyncio
+    async def test_lotr_404_case(self, cog_bot, patched_request_404):
+        await dpytest.message("!lotr 24601")
+        assert dpytest.verify().message().content("I couldn't find a quote!")
