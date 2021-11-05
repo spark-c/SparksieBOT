@@ -164,9 +164,12 @@ class Functions(commands.Cog):
 
 
     @commands.command()
-    async def lotr(self, ctx) -> None: #grabs a random quote from source site
+    async def lotr(self, ctx, seed=None) -> None: #grabs a random quote from source site
         attempts: int = 0
         while attempts < 3:
+            if seed:
+                # always generates queryIndex==64
+                random.seed(24601)
             queryIndex: int = random.randint(1, 64) # 64 quotes on the site
             queryURL: str = f"http://lotrproject.com/quotes/quote/{str(queryIndex)}"
             headers: Dict[str, str] = {
@@ -178,7 +181,8 @@ class Functions(commands.Cog):
             try:
                 results.raise_for_status()
                 break
-            except:
+            except Exception as e:
+                print(e)
                 attempts += 1
                 continue
         else:

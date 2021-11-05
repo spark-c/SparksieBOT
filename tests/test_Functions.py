@@ -1,6 +1,8 @@
 import pytest
 import discord.ext.test as dpytest
+from discord import Embed
 import random
+import requests
 from . import conftest
 
 
@@ -40,7 +42,7 @@ class TestCommands:
 
     @pytest.mark.asyncio
     async def test_marco_with_one_TextChannel(self, cog_bot):
-        message = await dpytest.message("!marco")
+        await dpytest.message("!marco")
         assert dpytest.verify().message().content("Polo!")
 
 
@@ -67,7 +69,6 @@ class TestCommands:
     async def test_roll(self, cog_bot, dice, expected_roll):
         # using random.seed(), the die should roll the same number every time
         await dpytest.message(f"!roll {dice} 24601")
-        await conftest.print_message_history(2)
         assert dpytest.verify().message().contains().content(
             f"Here are your numbers: {expected_roll}"
         )
@@ -89,6 +90,18 @@ class TestCommands:
 
 
     @pytest.mark.asyncio
-    async def test_lotr(self, cog_bot):
-        # TODO: learn to monkeypatch requests.get()env
-        pass
+    async def test_lotr(self, cog_bot, patched_request, patched_request_success):
+        test_embed = Embed(
+            name="",
+            description="The world is indeed full of peril, and in it there are many dark places; but still there is much that is fair, and though in all lands love is now mingled with grief, it grows perhaps the greater."
+        )
+        test_embed.add_field(
+            name="Haldir",
+            value="J.R.R. Tolkien, Lothlórien, The Fellowship of the Ring"
+        )
+
+        await dpytest.message("!lotr 24601")
+
+        await conftest.print_message_history()
+
+        assert dpytest.verify().message().embed(test_embed)

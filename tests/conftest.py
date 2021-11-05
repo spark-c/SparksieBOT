@@ -4,9 +4,11 @@ import pytest
 import discord.ext.test as dpytest
 import asyncio
 import os
+import requests
 from setuptools import glob
 
 import bot as sb
+from .data import patch_cfg
 
 
 # @pytest.fixture(scope="session")
@@ -30,6 +32,34 @@ async def bot(event_loop):
     yield _bot_factory
 
     await dpytest.empty_queue()
+
+
+@pytest.fixture
+def patched_request(monkeypatch):
+    def mock_get(url, **kwargs):
+        json = patch_cfg.lookup[url]
+        mock = type("MockedRequest", (), {})()
+        mock.json = json #type: ignore
+        mock.text = mock.json['text'] #type: ignore
+        return mock
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+
+@pytest.fixture
+def patched_request_success(monkeypatch, patched_request):
+    def mock_status_success():
+        return None
+
+    monkeypatch.setattr(requests.Response, "raise_for_status", mock_status_success)
+
+
+@pytest.fixture
+def patched_request_404(monkeypatch, patched_request):
+    def mock_raise_for_status_404():
+        raise requests.HTTPError("Mock 404 Error")
+
+    monkeypatch.setattr(requests.Response, "raise_for_status", mock_raise_for_status_404)
 
 
 async def print_message_history(limit:int=2):
