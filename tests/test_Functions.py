@@ -72,6 +72,29 @@ class TestCommands:
         assert dpytest.verify().message().contains().content(
             f"Here are your numbers: {expected_roll}"
         )
+
+    
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "dice, err_msg",
+        [
+            ("4", "Usage: !roll 4d6"),
+            ("2 10", "Usage: !roll 4d6"),
+            ("-1d4", "Values must be greater than zero!"),
+            ("5d-10", "Values must be greater than zero!"),
+            ("5a20", "Usage: !roll 4d6")
+        ],
+        ids=[
+            "single-digit",
+            "no-letter-btwn",
+            "negative-value1",
+            "negative-value2",
+            "wrong-letter-separator"
+        ]
+    )
+    async def test_roll_with_bad_values(self, cog_bot, dice, err_msg):
+        await dpytest.message(f"!roll {dice} 24601")
+        assert dpytest.verify().message().content(err_msg)
     
 
     @pytest.mark.asyncio

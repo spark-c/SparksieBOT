@@ -64,6 +64,7 @@ class Functions(commands.Cog):
         if terms:
             query = terms
         else:
+            # TODO: use random.choice instead
             query = catQueries[random.randint(0, len(catQueries)-1)]
 
         if query[0] == '-f': # optional arg to return the first search result
@@ -95,21 +96,27 @@ class Functions(commands.Cog):
 
 
     @commands.command()
-    async def roll(self, ctx, dice:str, seed=None) -> None: #generate a random number between min and max, optionally several times.
-        # TODO: fix arg to be properly captured in its own var
+    async def roll(self, ctx, dice:str, seed=None) -> None:
+        """ Generate a random number between min and max, optionally several times. """
+        # TODO: seed should be indicated with a FLAG, not as positional argument
         try:
             temp_strings: List[str] = dice.split("d") # "4d6" = ["4", "6"]
             nums: List[int] = list(map(
                 lambda s: int(s), temp_strings
             ))
+            for num in nums:
+                if num < 1:
+                    await ctx.channel.send("Values must be greater than zero!")
+                    return
+
             iters: int = nums[0]
             die_size: int = nums[1]
         except:
-            await ctx.channel.send('Usage: !roll 4d6')
+            await ctx.channel.send("Usage: !roll 4d6")
             return
 
         rolls: List[int] = list()
-        for _ in range(iters): #generate the numbers
+        for _ in range(iters): # generate the numbers
             if seed:
                 random.seed(int(seed))
             rolls.append(random.randint(1, die_size))
