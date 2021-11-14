@@ -68,7 +68,7 @@ class TestCommands:
     )
     async def test_roll(self, cog_bot, dice, expected_roll):
         # using random.seed(), the die should roll the same number every time
-        await dpytest.message(f"!roll {dice} 24601")
+        await dpytest.message(f"!roll {dice} --test")
         assert dpytest.verify().message().contains().content(
             f"Here are your numbers: {expected_roll}"
         )
@@ -123,11 +123,11 @@ class TestCommands:
             value="J.R.R. Tolkien, Lothlórien, The Fellowship of the Ring"
         )
 
-        await dpytest.message("!lotr 24601")
+        await dpytest.message("!lotr --test")
         assert dpytest.verify().message().embed(test_embed)
 
     
     @pytest.mark.asyncio
     async def test_lotr_404_case(self, cog_bot, patched_request_404):
-        await dpytest.message("!lotr 24601")
+        await dpytest.message("!lotr --test")
         assert dpytest.verify().message().content("I couldn't find a quote!")

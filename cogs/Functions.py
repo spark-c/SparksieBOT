@@ -96,7 +96,7 @@ class Functions(commands.Cog):
 
 
     @commands.command()
-    async def roll(self, ctx, dice:str, seed=None) -> None:
+    async def roll(self, ctx, dice:str, *args) -> None:
         """ Generate a random number between min and max, optionally several times. """
         # TODO: seed should be indicated with a FLAG, not as positional argument
         try:
@@ -117,8 +117,8 @@ class Functions(commands.Cog):
 
         rolls: List[int] = list()
         for _ in range(iters): # generate the numbers
-            if seed:
-                random.seed(int(seed))
+            if "--test" in args:
+                random.seed(24601)
             rolls.append(random.randint(1, die_size))
 
         results: List[str] = list(map(lambda n: str(n), rolls))
@@ -171,11 +171,12 @@ class Functions(commands.Cog):
 
 
     @commands.command()
-    async def lotr(self, ctx, seed=None) -> None: #grabs a random quote from source site
+    async def lotr(self, ctx, *args) -> None: #grabs a random quote from source site
         attempts: int = 0
         while attempts < 3:
-            if seed:
-                # always generates queryIndex==64
+            if "--test" in args:
+                print("TESTING!!!")
+                # always generates queryIndex==34
                 random.seed(24601)
             queryIndex: int = random.randint(1, 64) # 64 quotes on the site
             queryURL: str = f"http://lotrproject.com/quotes/quote/{str(queryIndex)}"
