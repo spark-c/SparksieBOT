@@ -151,7 +151,7 @@ class Functions(commands.Cog):
             await ctx.message.delete()
             await ctx.channel.send(' '.join(args))
         else:
-            await ctx.channel.send('Nice try. I\'m not your mouthpiece anymore!')
+            await ctx.channel.send("Nice try. I'm not your mouthpiece anymore!")
 
 
     @commands.command()

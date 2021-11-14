@@ -104,7 +104,16 @@ class TestCommands:
 
     @pytest.mark.asyncio
     async def test_say(self, cog_bot):
+        # TODO: fake user "spark.c#7001"
+        # message = "hello, world"
+        # await dpytest.message(f"!say {message}")
+        # assert dpytest.verify().message().content(message)
         pass
+
+    @pytest.mark.asyncio
+    async def test_say_without_permission(self, cog_bot):
+        await dpytest.message(f"!say asdf")
+        assert dpytest.verify().message().content("Nice try. I'm not your mouthpiece anymore!")
 
 
     @pytest.mark.asyncio
