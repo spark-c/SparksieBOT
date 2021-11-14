@@ -71,6 +71,12 @@ Usage: `!rmlist <list-name>` (list-name REQUIRED!)\
 Usage: `!rmitem [-l <list-name>] <item-name>`\
 `!rmitem -l "My First List" Item1`
 
+
+### (Music cog)
+---
+Work in progress on branch "music"!
+
+
 ### (Minecraft cog)
 ---
 !playercount: Returns the number of players currently connected to the Baby Blue Minecraft server. Optionally takes the argument "names" to return the players' usernames as well.\

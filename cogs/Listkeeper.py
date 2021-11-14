@@ -2,16 +2,15 @@
 # July 2021
 # Collin Sparks
 
-from cogs.listkeeper_db.lkdb import DatabaseError
 import discord
 from discord.ext import commands
 import asyncio
 from typing import Union, Dict, List, Optional
 from argparse import Namespace # for type annots
 
-from cogs.listkeeper_db.lkdb import Collection, Item
-import cogs.listkeeper_db.lkdb as lkdb
-import cmdparser
+import cogs.utils.listkeeper.lkdb as lkdb
+from cogs.utils.listkeeper.lkdb import Collection, Item, DatabaseError
+import utils.cmdparser as cmdparser
 
 
 class Listkeeper(commands.Cog):

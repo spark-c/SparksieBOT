@@ -4,3 +4,4 @@ startatom.bat
 venv/
 __pycache__/
 config.json
+.pytest_cache/
