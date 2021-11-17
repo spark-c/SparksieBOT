@@ -26,7 +26,7 @@ class ApiCalls(commands.Cog):
         try:
             pargs: Namespace = cmdparser.pspop.parse_args(args)
         except cmdparser.ArgumentError as e:
-            await self.handle_argument_error(ctx, e)
+            await cmdparser.pspop.handle_argument_error(ctx, e)
             return
 
         if pargs.server is None:
@@ -57,20 +57,6 @@ class ApiCalls(commands.Cog):
             f"NSO: {nso}"
         )
 
-
-    async def handle_argument_error(
-        self, 
-        ctx, 
-        error: cmdparser.ArgumentError
-        ) -> None:
-
-        # TODO fix the formatting of this message
-        await ctx.channel.send(
-                "Unable to parse arguments!" +
-                error.message + "\n" +
-                error.usage
-            )
-        return
         
 
 def setup(bot):

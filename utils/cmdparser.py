@@ -21,6 +21,20 @@ class LoudArgumentParser(argparse.ArgumentParser):
         )
         raise ArgumentError(message, usage)
 
+    async def handle_argument_error(
+        self, 
+        ctx, 
+        error: ArgumentError
+        ) -> None:
+
+        # TODO fix the formatting of this message
+        await ctx.channel.send(
+                "Unable to parse arguments!" +
+                error.message + "\n" +
+                error.usage
+            )
+        return
+
 
 ## Listkeeper parsers
 # TODO: break out into listkeeper's own args file.
