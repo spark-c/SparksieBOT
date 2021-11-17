@@ -199,7 +199,7 @@ class Functions(commands.Cog):
 
         try:
             parsed: bs4.BeautifulSoup = bs4.BeautifulSoup(
-                results.text, 'html.parser'
+                results.json()["text"], 'html.parser'
             )
             quote = parsed.find(class_ = 'text')
             character = parsed.find(class_ = 'character')

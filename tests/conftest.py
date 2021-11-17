@@ -44,7 +44,6 @@ def mocked_response():
             def __init__(self, url, status_code, **kwargs):
                 self.status_code = status_code
                 self.url = url
-                self.text = self.json()['text']
                 self.kwargs = kwargs
             
             def json(self):
