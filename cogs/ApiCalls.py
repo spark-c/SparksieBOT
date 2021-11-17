@@ -14,9 +14,31 @@ class ApiCalls(commands.Cog):
 
     @commands.command()
     async def pspop(self, ctx, *args) -> None:
-        try:
+        server_lookup = {
+            "connery": "1",
+            "miller": "10",
+            "cobalt": "13",
+            "emerald": "17",
+            "jaeger": "19",
+            "soltech": "40"
+        }
 
-            response = requests.get("https://ps2.fisu.pw/api/population/?world=17")
+        try:
+            pargs: Namespace = cmdparser.pspop.parse_args(args)
+        except cmdparser.ArgumentError as e:
+            await self.handle_argument_error(ctx, e)
+            return
+
+        if pargs.server is None:
+            server_name = "emerald"
+        elif pargs.server in server_lookup.keys():
+            server_name = pargs.server.lower()
+        else:
+            await ctx.send("Server name not recognized!")
+            return
+
+        try:
+            response = requests.get(f"https://ps2.fisu.pw/api/population/?world={server_lookup[server_name]}")
             data = response.json()["result"][0]
             vs = data["vs"]
             nc = data["nc"]
@@ -28,12 +50,27 @@ class ApiCalls(commands.Cog):
             return
 
         await ctx.send(
-            "Here is the current population for Emerald:\n" +
+            f"Here is the current population for {server_name.capitalize()}:\n" +
             f"VS: {vs}\n" +
             f"NC: {nc}\n" +
             f"TR: {tr}\n" +
             f"NSO: {nso}"
         )
+
+
+    async def handle_argument_error(
+        self, 
+        ctx, 
+        error: cmdparser.ArgumentError
+        ) -> None:
+
+        # TODO fix the formatting of this message
+        await ctx.channel.send(
+                "Unable to parse arguments!" +
+                error.message + "\n" +
+                error.usage
+            )
+        return
         
 
 def setup(bot):

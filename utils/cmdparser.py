@@ -23,6 +23,7 @@ class LoudArgumentParser(argparse.ArgumentParser):
 
 
 ## Listkeeper parsers
+# TODO: break out into listkeeper's own args file.
 newlist: LoudArgumentParser = LoudArgumentParser(description="Creates a new list.")
 newlist.add_argument(
     "list_name",
@@ -88,3 +89,14 @@ def fail() -> None:
         additem.parse_args(["little", "cindy", "lou", "who"])
     except ArgumentError as e:
         print("ERROR! Here:\n", e, "\n", e.usage)
+
+
+## pspop parser
+pspop: LoudArgumentParser = LoudArgumentParser(
+    description="Checks the current population of a given Planetside2 server. Default is Emerald."
+)
+pspop.add_argument(
+    "--server", "-s",
+    metavar="<server-name>",
+    help="Name of the server you'd like to query"
+)

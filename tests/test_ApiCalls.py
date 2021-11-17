@@ -13,6 +13,7 @@ def cog_bot(bot):
 @pytest.mark.asyncio
 async def test_pspop_default(cog_bot, patched_request):
     await dpytest.message("!pspop")
+    await conftest.print_message_history()
     assert dpytest.verify().message().content(
         "Here is the current population for Emerald:\n" +
         "VS: 99\n" +
@@ -32,10 +33,8 @@ async def test_pspop_default(cog_bot, patched_request):
 )
 @pytest.mark.asyncio
 async def test_pspop_server_flag(cog_bot, patched_request, args, server):
-    # await dpytest.message(f"!pspop {args}")
-    # assert dpytest.verify().message().contains().content(server)
-    assert True
-
+    await dpytest.message(f"!pspop {args}")
+    assert dpytest.verify().message().contains().content(server.capitalize())
 
 
 @pytest.mark.asyncio
