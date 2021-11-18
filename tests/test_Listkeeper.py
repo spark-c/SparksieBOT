@@ -21,9 +21,3 @@ async def get_last_message():
     channel = dpytest.get_config().channels[0]
     history = await channel.history(limit=limit).flatten() #type: ignore
     return history[-1]
-
-
-@pytest.mark.asyncio
-async def test_create_new_list(cog_bot):
-    x = CollectionFactory.create()
-    assert x
