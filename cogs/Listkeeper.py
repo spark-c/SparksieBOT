@@ -37,7 +37,7 @@ class Listkeeper(commands.Cog):
             new_colx: Collection = lkdb.create_collection(
                 name=name,
                 description=desc,
-                collection_id=lkdb.generate_id(),
+                id=lkdb.generate_id(),
                 guild_id=str(ctx.guild.id)
             )
             Listkeeper.selected_list[str(ctx.guild.id)] = new_colx
@@ -77,7 +77,7 @@ class Listkeeper(commands.Cog):
             new_item: Item = lkdb.create_item(
                 name=pargs.item_name,
                 note=pargs.item_description,
-                item_id=lkdb.generate_id(),
+                id=lkdb.generate_id(),
                 collection_id=Listkeeper.selected_list[str(ctx.guild.id)].collection_id
             )
             await ctx.message.add_reaction('\N{THUMBS UP SIGN}')

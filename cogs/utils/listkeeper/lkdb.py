@@ -16,9 +16,9 @@ Session = scoped_session(session_factory)
 
 ## HELPER FUNCTIONS ##
 ## Create
-def create_collection(name: str, description: Union[str, None], collection_id: str, guild_id: str) -> Collection:
+def create_collection(name: str, description: Union[str, None], id: str, guild_id: str) -> Collection:
     description = "" if description == None else description # default argument "" (conditional expression)
-    new_colx = Collection(name=name, description=description, collection_id=collection_id, guild_id=guild_id)
+    new_colx = Collection(name=name, description=description, id=id, guild_id=guild_id)
     with Session() as session:
         try:
             session.add(new_colx)
@@ -30,14 +30,14 @@ def create_collection(name: str, description: Union[str, None], collection_id: s
                 "new_colx\n" +
                 f"name: {name}\n" +
                 f"description: {description}\n" +
-                f"collection_id: {collection_id}\n" +
+                f"collection_id: {id}\n" +
                 f"guild_id: {guild_id}\n"
             )
 
 
-def create_item(name: str, note: Union[str, None], item_id: str, collection_id: str) -> Item:
+def create_item(name: str, note: Union[str, None], id: str, collection_id: str) -> Item:
     note = "" if note is None else note
-    new_item: Item = Item(name=name, note=note, item_id=item_id, collection_id=collection_id)
+    new_item: Item = Item(name=name, note=note, item_id=id, collection_id=collection_id)
     with Session() as session:
         try:
             session.add(new_item)
@@ -48,7 +48,7 @@ def create_item(name: str, note: Union[str, None], item_id: str, collection_id: 
                 "new_item\n" +
                 f"name: {name}\n" +
                 f"note: {note}\n" +
-                f"item_id: {item_id}\n" +
+                f"item_id: {id}\n" +
                 f"collection_id: {collection_id}\n"
             )
     return new_item
@@ -93,7 +93,7 @@ def get_items(collection_name: str, guild_id: str) -> List[Item]:
     with Session() as session:
         results: List[Item] = (
             session.query(Item)
-            .filter(Item.collection_id == found_colx.collection_id)
+            .filter(Item.collection_id == found_colx.id)
             .all()
         )
 
@@ -135,7 +135,7 @@ def delete_item(collection_name: str, guild_id: str, item_name: str) -> None:
         # TODO abstract this into its own function
         item_to_delete: Item = (
             session.query(Item)
-            .filter(Item.collection_id==parent_collection.collection_id)
+            .filter(Item.collection_id==parent_collection.id)
             .filter(func.lower(Item.name)==item_name.lower())
             .first()
         )
@@ -152,7 +152,7 @@ def delete_item(collection_name: str, guild_id: str, item_name: str) -> None:
 ## ID Management
 with Session() as session:
     tmp: List[Item] = session.query(Item).all() # These two lines create a set of all ids in use, to prevent creating duplicates
-    used_ids: Set[str] = set([i.collection_id for i in tmp] + [j.item_id for j in tmp])
+    used_ids: Set[str] = set([item.collection_id for item in tmp] + [item.id for item in tmp])
 
 def generate_id() -> str:
     while True: # loop until we get a unique ID
