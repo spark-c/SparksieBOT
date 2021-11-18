@@ -1,12 +1,12 @@
-# import pytest
-# from tests.factories.collection import CollectionFactoryBase
-# from tests.factories.item import ItemFactory
+import pytest
+from tests.factories.collection import CollectionFactoryBase
+from tests.factories.item import ItemFactory
 
 
-# class TestCollectionFactory:
-#     pass
+class TestCollectionFactory:
+    pass
 
 
 
-# class TestItemFactory:
-#     pass
+class TestItemFactory:
+    pass

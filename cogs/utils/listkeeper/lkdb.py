@@ -1,59 +1,18 @@
 # manages interfacing with heroku postgres db for ListKeeper cog
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, ForeignKey, Column, String, func
+
 import secrets
-import json
-import os
+from sqlalchemy import func
+from sqlalchemy.orm import sessionmaker, scoped_session
+from typing import Union, List, Set
 
-from typing import Union, List, Set, Any
-
-class DatabaseError(Exception):
-    def __init__(self, message="Unable to complete database operation!", object_to_debug: Any=None) -> None:
-        self.message: str = message
-        super().__init__(self.message)
+from .models import Collection, Item, engine
+from .errors import DatabaseError
 
 # TODO: handle possibility of db downtime
 
-# config / envvars
-DATABASE_URL: Union[str, None] = None
-try:
-    with open("./config.json") as f: # when hosted from a normal filesystem
-        DATABASE_URL = json.load(f)["DATABASE_URL"]
-except: # when hosted from Heroku / envvars
-    DATABASE_URL = os.environ["DATABASE_URL"].replace("postgres", "postgresql") # Heroku demands "postgres" instead of "postgresql"
-
-
-try:
-    engine = create_engine(DATABASE_URL, echo=False)
-except:
-    raise DatabaseError(f"Unable to connect to the database! Address used: {DATABASE_URL}")
-Base = declarative_base()
-Session = sessionmaker(bind=engine, expire_on_commit=False)
-
-
-class Collection(Base):
-    __tablename__ = "collection"
-
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    collection_id = Column(String, primary_key=True, nullable=False)
-    items = relationship("Item", back_populates="collection", lazy="joined", cascade="all, delete-orphan")
-    guild_id = Column(String, nullable=False)
-
-
-class Item(Base):
-    __tablename__ = "item"
-
-    name = Column(String, nullable=False)
-    note = Column(String, nullable=True)
-    item_id = Column(String, primary_key=True, nullable=False)
-    collection_id = Column(String, ForeignKey("collection.collection_id"), nullable=False)
-    collection = relationship("Collection", lazy="joined", back_populates="items")
-
-
-Base.metadata.create_all(engine)
-
+# https://docs.sqlalchemy.org/en/14/orm/contextual.html#unitofwork-contextual
+session_factory = sessionmaker(bind=engine)
+Session = scoped_session(session_factory)
 
 ## HELPER FUNCTIONS ##
 ## Create

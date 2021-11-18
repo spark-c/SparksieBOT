@@ -1,9 +1,7 @@
 import factory
 import secrets
-from cogs.utils.listkeeper.lkdb import (
-    Collection,
-    Session
-)
+from cogs.utils.listkeeper.lkdb import Session
+from cogs.utils.listkeeper.models import Collection
 from .item import ItemFactory
 
 
@@ -12,7 +10,7 @@ class CollectionFactoryBase(factory.alchemy.SQLAlchemyModelFactory):
         model = Collection
         sqlalchemy_session = Session
 
-    collection_id = factory.LazyFunction(lambda: secrets.token_hex(4))
+    id = factory.LazyFunction(lambda: secrets.token_hex(4))
     name = factory.Faker("sentence", nb_words=5)
     description = factory.Faker("sentence", nb_words=10)
     guild_id = factory.Faker(
@@ -30,4 +28,4 @@ class CollectionFactory(CollectionFactoryBase):
             return
         if extracted:
             pass
-        ItemFactory.create()
+        ItemFactory.create(collection=self)
