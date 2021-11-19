@@ -8,7 +8,13 @@ from tests.factories.collection import CollectionFactory
 
 class TestCollection:
 
-    @pytest.mark.asyncio
     def test_create_new_collection(self):
-        x = CollectionFactory.create()
-        assert x
+        colx = CollectionFactory.create()
+        assert colx
+
+
+class TestItem:
+
+    def test_create_new_item(self):
+        item = ItemFactory.create()
+        assert item
