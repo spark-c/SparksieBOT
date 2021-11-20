@@ -37,7 +37,7 @@ def create_collection(name: str, description: Union[str, None], id: str, guild_i
 
 def create_item(name: str, note: Union[str, None], id: str, collection_id: str) -> Item:
     note = "" if note is None else note
-    new_item: Item = Item(name=name, note=note, item_id=id, collection_id=collection_id)
+    new_item: Item = Item(name=name, note=note, id=id, collection_id=collection_id)
     with Session() as session:
         try:
             session.add(new_item)

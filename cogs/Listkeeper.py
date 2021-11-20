@@ -78,7 +78,7 @@ class Listkeeper(commands.Cog):
                 name=pargs.item_name,
                 note=pargs.item_description,
                 id=lkdb.generate_id(),
-                collection_id=Listkeeper.selected_list[str(ctx.guild.id)].collection_id
+                collection_id=Listkeeper.selected_list[str(ctx.guild.id)].id
             )
             await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
             # await ctx.channel.send(f"Successfully created item {new_item.name}")
