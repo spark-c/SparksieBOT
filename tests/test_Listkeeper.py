@@ -22,7 +22,7 @@ from tests.factories.collection import CollectionFactory, EmptyCollectionFactory
 from typing import List
 
 
-session_factory: sessionmaker = sessionmaker(bind=engine)
+session_factory: sessionmaker = sessionmaker(bind=engine, expire_on_commit=False)
 Session: scoped_session = scoped_session(session_factory)
 
 

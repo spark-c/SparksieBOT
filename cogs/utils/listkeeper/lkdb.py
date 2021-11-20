@@ -11,7 +11,7 @@ from .errors import DatabaseError
 # TODO: handle possibility of db downtime
 
 # https://docs.sqlalchemy.org/en/14/orm/contextual.html#unitofwork-contextual
-session_factory = sessionmaker(bind=engine)
+session_factory = sessionmaker(bind=engine, expire_on_commit=False)
 Session = scoped_session(session_factory)
 
 ## HELPER FUNCTIONS ##
