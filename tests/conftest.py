@@ -15,7 +15,7 @@ from .data import patch_cfg
 # @pytest.fixture(scope="session")
 # def event_loop():
 #     """ Provides an asyncio event_loop used to session-scope the fixtures """
-#     loop = asyncio.get_event_loop()
+#     loop = asyncio.get_running_loop() # changed from get_event_loop b/c of deprecation warning
 #     yield loop
 #     loop.close()
 
