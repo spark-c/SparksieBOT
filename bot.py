@@ -37,6 +37,7 @@ class SparksieBot(Bot):
 
 
 intents = discord.Intents.default()
+intents.message_content = True
 intents.members = True
 intents.typing = False
 intents.presences = False
