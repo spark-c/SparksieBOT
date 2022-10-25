@@ -59,5 +59,5 @@ class ApiCalls(commands.Cog):
 
         
 
-def setup(bot):
-    bot.add_cog(ApiCalls(bot))
+async def setup(bot):
+    await bot.add_cog(ApiCalls(bot))

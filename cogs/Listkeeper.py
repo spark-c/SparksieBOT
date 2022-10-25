@@ -275,8 +275,8 @@ def create_embed(
 
 
 
-def setup(bot):
-    bot.add_cog(Listkeeper(bot))
+async def setup(bot):
+    await bot.add_cog(Listkeeper(bot))
 
     
 

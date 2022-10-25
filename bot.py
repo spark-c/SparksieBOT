@@ -44,7 +44,7 @@ intents.presences = False
 bot: SparksieBot = SparksieBot(command_prefix='!', intents=intents)
 
 
-def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
+async def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
 
     # --------------------
     # EVENTS
@@ -175,7 +175,7 @@ def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
 
         async def my_load(ctx, extension, bot) -> None:
             try:
-                bot.load_extension('cogs.{0}'.format(extension))
+                await bot.load_extension('cogs.{0}'.format(extension))
                 await ctx.channel.send('Extension \'{0}\' loaded!'.format(extension))
             except:
                 await ctx.channel.send('Load \'{0}\' failed!'.format(extension))
@@ -183,7 +183,7 @@ def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
 
         async def my_unload(ctx, extension, bot) -> None:
             try:
-                bot.unload_extension('cogs.{0}'.format(extension))
+                await bot.unload_extension('cogs.{0}'.format(extension))
                 await ctx.channel.send('Extension \'{0}\' unloaded!'.format(extension))
             except:
                 await ctx.channel.send('Unload \'{0}\' failed!'.format(extension))
@@ -197,7 +197,7 @@ def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
             if filename.endswith('.py'):
                 try:
                     loadThis: str = filename[:-3]
-                    bot.load_extension(f"cogs.{loadThis}")
+                    await bot.load_extension(f"cogs.{loadThis}")
                     print(f"cog {filename} loaded.")
                 except Exception as e:
                     print(f"cog {filename} failed!")
@@ -205,7 +205,7 @@ def initialize_bot(bot: SparksieBot, load_cogs: Optional[List[str]]=None):
     else:
         for cog in load_cogs:
             try:
-                bot.load_extension(f"cogs.{cog}")
+                await bot.load_extension(f"cogs.{cog}")
                 print(f"cog {cog} loaded.")
             except Exception as e:
                 print(f"cog {cog} failed!")

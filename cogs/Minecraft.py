@@ -63,8 +63,8 @@ def buildQueryReturn(queryTuple, getNames):
 
         
 
-def setup(bot):
-    bot.add_cog(Minecraft(bot))
+async def setup(bot):
+    await bot.add_cog(Minecraft(bot))
 
 
     

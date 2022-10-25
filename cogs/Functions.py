@@ -246,5 +246,5 @@ class Functions(commands.Cog):
 !help_printout - shows this message.''')
 
 
-def setup(bot):
-    bot.add_cog(Functions(bot))
+async def setup(bot):
+    await bot.add_cog(Functions(bot))
