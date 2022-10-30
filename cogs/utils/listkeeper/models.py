@@ -14,7 +14,7 @@ def get_db_url():
     try:
         with open("./config.json") as f:
             # this creates an in-memory sqlite3 db
-            DATABASE_URL = json.load(f)["DATABASE_URL"]["testing"]
+            DATABASE_URL = json.load(f)["DATABASE_URL"]["development"]
     except: # when hosted from Heroku / envvars
         DATABASE_URL = os.environ["DATABASE_URL"].replace("postgres", "postgresql") # Heroku demands "postgres" instead of "postgresql"
 
